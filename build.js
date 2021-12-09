@@ -14,7 +14,22 @@ const evalValue = (base, value) =>
     else
     if ("string" === typeof value.path)
     {
-        return fget(value.path);
+        let result = fget(value.path);
+        if (value.replace)
+        {
+            if (Array.isArray(value.replace))
+            {
+                value.replace.forEach
+                (
+                    replace => result = result.replace(new RegExp(replace.match, "gmu"), evalValue(base, replace.text))
+                )
+            }
+            else
+            {
+                result = result.replace(new RegExp(value.replace.match, "gmu"), evalValue(base, value.replace.text));
+            }
+        }
+        return result;
     }
     else
     if ("string" === typeof value.resource)
