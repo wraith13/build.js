@@ -42,12 +42,15 @@ const evalValue = (base, value) =>
     else
     if (undefined !== value.call)
     {
-        if ("timestamp" === value.call)
+        switch(value.call)
         {
+        case "command":
+            return process.argv.join(" ");
+        case "timestamp":
             return `${new Date()}`;
-        }
-        else
-        {
+        case "timestamp_tick":
+            return `${new Date().getTime()}`;
+        default:
             console.error(`unknown call: ${key}: ${JSON.stringify(value)}`);
         }
     }
