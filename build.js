@@ -46,6 +46,8 @@ const evalValue = (base, value) =>
         {
         case "command":
             return process.argv.join(" ");
+        case "command_options":
+            return process.argv.filter((_i, index) => 2 <= index).join(" ");
         case "timestamp":
             return `${new Date()}`;
         case "timestamp_tick":
