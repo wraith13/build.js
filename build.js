@@ -32,6 +32,25 @@ const evalValue = (base, value) =>
         return result;
     }
     else
+    if ("string" === typeof value.json)
+    {
+        let result = fget(value.json);
+        if (undefined !== value.key)
+        {
+            let current = JSON.parse(result);
+            if (Array.isArray(value.key))
+            {
+                value.key.forEach(k => current = current[k]);
+                result = `${current}`;
+            }
+            else
+            {
+                result = `${current[value.key]}`;
+            }
+        }
+        return result;
+    }
+    else
     if ("string" === typeof value.resource)
     {
         const resource = require(makePath(base, value.resource));
