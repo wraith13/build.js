@@ -1,7 +1,7 @@
 'use strict';
 const startAt = new Date();
 const getBuildTime = () => new Date().getTime() - startAt.getTime();
-console.log(`build start: ${startAt} 🚀`);
+console.log(`🚀 build start: ${startAt}`);
 try
 {
     const process = require("process");
@@ -126,11 +126,11 @@ try
             template
         )
     );
-    console.log(`build end: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s ) ✅`);
+    console.log(`✅ build end: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s )`);
 }
 catch
 {
-    console.log(`build failed: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s ) 🚫`);
+    console.log(`🚫 build failed: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s )`);
 }
 
 // how to run: `node ./build.js BUILD-JSON-PATH BUILD-OPTION`
