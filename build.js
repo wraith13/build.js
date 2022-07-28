@@ -1,7 +1,9 @@
 'use strict';
 const startAt = new Date();
 const getBuildTime = () => new Date().getTime() - startAt.getTime();
-console.log(`🚀 build start: ${startAt}`);
+const jsonPath = process.argv[2];
+const mode = process.argv[3] || "default";
+console.log(`🚀 ${jsonPath} ${mode} build start: ${startAt}`);
 try
 {
     const process = require("process");
@@ -85,10 +87,9 @@ try
         }
         return null;
     };
-    const jsonPath = process.argv[2];
     const base = jsonPath.replace(/\/[^\/]+$/, "/");
     const json = require(jsonPath);
-    (json.preprocesses[process.argv[3] || "default"] || [ ]).forEach
+    (json.preprocesses[mode] || [ ]).forEach
     (
         command =>
         {
@@ -126,11 +127,11 @@ try
             template
         )
     );
-    console.log(`✅ build end: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s )`);
+    console.log(`✅ ${jsonPath} ${mode} build end: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s )`);
 }
 catch
 {
-    console.log(`🚫 build failed: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s )`);
+    console.log(`🚫 ${jsonPath} ${mode} build failed: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s )`);
 }
 
 // how to run: `node ./build.js BUILD-JSON-PATH BUILD-OPTION`
