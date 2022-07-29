@@ -88,8 +88,18 @@ try
         return null;
     };
     const base = jsonPath.replace(/\/[^\/]+$/, "/");
-    const json = require(jsonPath);
-    (json.preprocesses[mode] || [ ]).forEach
+    const master = require(jsonPath);
+    const json = master.default;
+    const modeJson = master[mode];
+    if (modeJson)
+    {
+        Object.keys(modeJson).forEach(key => json[key] = modeJson[key]);
+    }
+    else
+    {
+        console.error(`🚫 unknown mode: ${JSON.stringify(mode)} in ${JSON.stringify(Object.keys(json))}`);
+    }
+    (json?.preprocesses || [ ]).forEach
     (
         command =>
         {
@@ -134,4 +144,4 @@ catch
     console.log(`🚫 ${jsonPath} ${mode} build failed: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s )`);
 }
 
-// how to run: `node ./build.js BUILD-JSON-PATH BUILD-OPTION`
+// how to run: `node ./build.js BUILD-JSON-PATH BUILD-MODE`
