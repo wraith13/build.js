@@ -79,25 +79,68 @@ try
                 return `${new Date().getTime()}`;
             default:
                 console.error(`🚫 unknown call: ${key}: ${JSON.stringify(value)}`);
+                throw new Error();
             }
         }
         else
         {
             console.error(`🚫 unknown parameter: ${key}: ${JSON.stringify(value)}`);
+            throw new Error();
         }
         return null;
     };
     const base = jsonPath.replace(/\/[^\/]+$/, "/");
     const master = require(jsonPath);
-    const json = master.default;
+    const json = master.default ?? { };
     const modeJson = master[mode];
+    const applyJsonObject = (target, source) =>
+    {
+        Object.keys(source).forEach
+        (
+            key =>
+            {
+                if ("object" !== typeof target[key] || "object" !== typeof source[key])
+                {
+                    target[key] = source[key];
+                }
+                else
+                if (Array.isArray(target[key]) || Array.isArray(source[key]))
+                {
+                    target[key] = source[key];
+                }
+                else
+                {
+                    applyJsonObject(target[key], source[key]);
+                }
+            }
+        );
+    };
+    const applyJson = (master, target, source) =>
+    {
+        const base = source.base;
+        if (base)
+        {
+            const baseJson = master[base];
+            if (baseJson)
+            {
+                applyJson(master, target, baseJson);
+            }
+            else
+            {
+                console.error(`🚫 unknown base mode: ${JSON.stringify(base)} in ${JSON.stringify(Object.keys(master))}`);
+                throw new Error();
+            }
+        }
+        applyJsonObject(target, source);
+    };
     if (modeJson)
     {
-        Object.keys(modeJson).forEach(key => json[key] = modeJson[key]);
+        applyJson(master, json, modeJson);
     }
     else
     {
-        console.error(`🚫 unknown mode: ${JSON.stringify(mode)} in ${JSON.stringify(Object.keys(json))}`);
+        console.error(`🚫 unknown mode: ${JSON.stringify(mode)} in ${JSON.stringify(Object.keys(master))}`);
+        throw new Error();
     }
     (json?.preprocesses || [ ]).forEach
     (
@@ -121,6 +164,7 @@ try
             if (template === template.replace(new RegExp(key, "g"), ""))
             {
                 console.error(`🚫 ${key} not found in ${JSON.stringify(json.template)}.`);
+                throw new Error();
             }
         }
     );
