@@ -1,4 +1,60 @@
 'use strict';
+export type JsonableValue = null | boolean | number | string;
+export interface JsonableObject
+{
+    [key: string]: undefined | Jsonable;
+}
+export type Jsonable = JsonableValue | Jsonable[] | JsonableObject;
+export const isJsonableObject = (value: Jsonable | undefined): value is JsonableObject =>
+    "object" === typeof value && ! Array.isArray(value);
+interface BuildPathValue extends JsonableObject
+{
+    path: string;
+    replace?:
+    {
+        match: string;
+        text: string;
+    };
+}
+interface BuildJsonValue extends JsonableObject
+{
+    json: string;
+    key?: string | string[];
+}
+interface BuildCallValue extends JsonableObject
+{
+    call: string;
+}
+interface BuildResourceValue extends JsonableObject
+{
+    resource: string;
+    base?: string;
+}
+type BuildValueType = string | BuildPathValue | BuildJsonValue | BuildCallValue | BuildResourceValue;
+const isBuildPathValue = (value: BuildValueType): value is BuildPathValue =>
+    "object" === typeof value &&
+    "string" === typeof value.path;
+const isBuildJsonValue = (value: BuildValueType): value is BuildJsonValue =>
+    "object" === typeof value &&
+    "string" === typeof value.json;
+const isBuildCallValue = (value: BuildValueType): value is BuildCallValue =>
+    "object" === typeof value &&
+    "string" === typeof value.call;
+const isBuildResourceValue = (value: BuildValueType): value is BuildResourceValue =>
+    "object" === typeof value &&
+    "string" === typeof value.resource;
+interface BuildMode extends JsonableObject
+{
+    base?: string;
+    template?: BuildValueType;
+    output?: BuildPathValue;
+    preprocesses?: string[];
+    parameters?: { [key: string]: BuildValueType; };
+}
+type BuildJson =
+{
+    [mode: string]: BuildMode;
+};
 const startAt = new Date();
 const getBuildTime = () => new Date().getTime() - startAt.getTime();
 const jsonPath = process.argv[2];
@@ -9,16 +65,16 @@ try
     const process = require("process");
     const child_process = require("child_process");
     const fs = require("fs");
-    const makePath = (...path) => path.map(i => undefined !== i ? i: "").join("").replace(/\/\.\//gm, "/");
-    const fget = (path) => fs.readFileSync(path, { encoding: "utf-8" });
-    const evalValue = (base, value) =>
+    const makePath = (...path : (undefined | string)[]) => path.map(i => undefined !== i ? i: "").join("").replace(/\/\.\//gm, "/");
+    const fget = (path: string) => fs.readFileSync(path, { encoding: "utf-8" });
+    const evalValue = (basePath: string, value: BuildValueType) =>
     {
         if ("string" === typeof value)
         {
             return value;
         }
         else
-        if ("string" === typeof value.path)
+        if (isBuildPathValue(value))
         {
             let result = fget(value.path);
             if (value.replace)
@@ -27,18 +83,18 @@ try
                 {
                     value.replace.forEach
                     (
-                        replace => result = result.replace(new RegExp(replace.match, "gmu"), evalValue(base, replace.text))
-                    )
+                        replace => result = result.replace(new RegExp(replace.match, "gmu"), evalValue(basePath, replace.text))
+                    );
                 }
                 else
                 {
-                    result = result.replace(new RegExp(value.replace.match, "gmu"), evalValue(base, value.replace.text));
+                    result = result.replace(new RegExp(value.replace.match, "gmu"), evalValue(basePath, value.replace.text));
                 }
             }
             return result;
         }
         else
-        if ("string" === typeof value.json)
+        if (isBuildJsonValue(value))
         {
             let result = fget(value.json);
             if (undefined !== value.key)
@@ -57,65 +113,62 @@ try
             return result;
         }
         else
-        if ("string" === typeof value.resource)
+        if (isBuildResourceValue(value))
         {
-            const resource = require(makePath(base, value.resource));
+            const resource = require(makePath(basePath, value.resource));
             return Object.keys(resource)
                 .map(id => `<div id="${id}">${fget(makePath(value.base, resource[id])).replace(/[\w\W]*(<svg)/g, "$1")}</div>`)
                 .join("");
         }
         else
-        if (undefined !== value.call)
+        if (isBuildCallValue(value))
         {
             switch(value.call)
             {
             case "command":
                 return process.argv.join(" ");
             case "command_options":
-                return process.argv.filter((_i, index) => 2 <= index).join(" ");
+                return process.argv.filter((_i: string, index: number) => 2 <= index).join(" ");
             case "timestamp":
                 return `${new Date()}`;
             case "timestamp_tick":
                 return `${new Date().getTime()}`;
             default:
-                console.error(`🚫 unknown call: ${key}: ${JSON.stringify(value)}`);
+                console.error(`🚫 unknown call: ${JSON.stringify(value)}`);
                 throw new Error();
             }
         }
         else
         {
-            console.error(`🚫 unknown parameter: ${key}: ${JSON.stringify(value)}`);
+            console.error(`🚫 unknown parameter: ${JSON.stringify(value)}`);
             throw new Error();
         }
         return null;
     };
-    const base = jsonPath.replace(/\/[^\/]+$/, "/");
-    const master = require(jsonPath);
+    const basePath = jsonPath.replace(/\/[^\/]+$/, "/");
+    const master = require(jsonPath) as BuildJson;
     const json = master.default ?? { };
     const modeJson = master[mode];
-    const applyJsonObject = (target, source) =>
+    const applyJsonObject = (target: JsonableObject, source: JsonableObject) =>
     {
         Object.keys(source).forEach
         (
             key =>
             {
-                if ("object" !== typeof target[key] || "object" !== typeof source[key])
+                const targetValue = target[key];
+                const sourceValue = source[key];
+                if (isJsonableObject(targetValue) && isJsonableObject(sourceValue))
                 {
-                    target[key] = source[key];
-                }
-                else
-                if (Array.isArray(target[key]) || Array.isArray(source[key]))
-                {
-                    target[key] = source[key];
+                    applyJsonObject(targetValue, sourceValue);
                 }
                 else
                 {
-                    applyJsonObject(target[key], source[key]);
+                    target[key] = source[key];
                 }
             }
         );
     };
-    const applyJson = (master, target, source) =>
+    const applyJson = (master: BuildJson, target: BuildMode, source: BuildMode) =>
     {
         const base = source.base;
         if (base)
@@ -156,8 +209,14 @@ try
             );
         }
     );
-    const template = evalValue(base, json.template);
-    Object.keys(json.parameters).forEach
+    if ( ! json.template)
+    {
+        console.error(`🚫 no template`);
+        throw new Error();
+    }
+    const template = evalValue(basePath, json.template);
+    const parameters = json.parameters || { };
+    Object.keys(parameters).forEach
     (
         key =>
         {
@@ -168,12 +227,17 @@ try
             }
         }
     );
+    if ( ! json.output)
+    {
+        console.error(`🚫 no output`);
+        throw new Error();
+    }
     fs.writeFileSync
     (
         json.output.path,
-        Object.keys(json.parameters).map
+        Object.keys(parameters).map
         (
-            key => ({ key, work: evalValue(base, json.parameters[key]) })
+            key => ({ key, work: evalValue(basePath, parameters[key]) })
         )
         .reduce
         (
