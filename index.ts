@@ -23,7 +23,7 @@ interface BuildPathValue extends JsonableObject
     replace?:
     {
         match: string;
-        text: string;
+        text: BuildValueType;
     };
 }
 const isValidBuildPathValue = (obj: any): obj is BuildPathValue =>
@@ -35,7 +35,7 @@ const isValidBuildPathValue = (obj: any): obj is BuildPathValue =>
         !
         (
             ("match" in obj.replace && isValidString(obj.replace.match)) &&
-            ("text" in obj.replace && isValidString(obj.replace.text))
+            ("text" in obj.replace && isValidBuildValue(obj.replace.text))
         )
     );
 interface BuildJsonValue extends JsonableObject

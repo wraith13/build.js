@@ -17,7 +17,7 @@
                             "type": "string"
                         },
                         "text": {
-                            "type": "string"
+                            "$ref": "#/definitions/Value"
                         }
                     },
                     "required": [

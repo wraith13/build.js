@@ -23,7 +23,7 @@ var isValidBuildPathValue = function (obj) {
         "path" in obj && isValidString(obj.path) &&
         !("replace" in obj &&
             !(("match" in obj.replace && isValidString(obj.replace.match)) &&
-                ("text" in obj.replace && isValidString(obj.replace.text))));
+                ("text" in obj.replace && isValidBuildValue(obj.replace.text))));
 };
 var isValidBuildJsonValue = function (obj) {
     return "object" === typeof obj &&
