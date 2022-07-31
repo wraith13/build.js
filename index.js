@@ -2,10 +2,52 @@
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isJsonableObject = void 0;
+var schema = "https://raw.githubusercontent.com/wraith13/build.js/master/json-schema.json#";
+var isValidString = function (obj) { return "string" === typeof obj; };
+var isValidArray = function (obj, valueValidator) {
+    return "object" === typeof obj &&
+        Array.isArray(obj) &&
+        0 === obj.filter(function (i) { return !valueValidator(i); }).length;
+};
+var isValidObject = function (obj, valueValidator) {
+    return "object" === typeof obj &&
+        !Array.isArray(obj) &&
+        0 === Object.keys(obj).filter(function (key) { return !valueValidator(obj[key]); }).length;
+};
 var isJsonableObject = function (value) {
     return "object" === typeof value && !Array.isArray(value);
 };
 exports.isJsonableObject = isJsonableObject;
+var isValidBuildPathValue = function (obj) {
+    return "object" === typeof obj &&
+        "path" in obj && isValidString(obj.path) &&
+        !("replace" in obj &&
+            !(("match" in obj.replace && isValidString(obj.replace.match)) &&
+                ("text" in obj.replace && isValidString(obj.replace.text))));
+};
+var isValidBuildJsonValue = function (obj) {
+    return "object" === typeof obj &&
+        "json" in obj && isValidString(obj.json) &&
+        !("key" in obj &&
+            !(isValidString(obj.key) ||
+                isValidArray(obj.key, isValidString)));
+};
+var isValidBuildCallValue = function (obj) {
+    return "object" === typeof obj &&
+        "call" in obj && isValidString(obj.call);
+};
+var isValidBuildResourceValue = function (obj) {
+    return "object" === typeof obj &&
+        "resource" in obj && isValidString(obj.resource) &&
+        !("base" in obj && !isValidString(obj.base));
+};
+var isValidBuildValue = function (obj) {
+    return isValidString(obj) ||
+        isValidBuildPathValue(obj) ||
+        isValidBuildJsonValue(obj) ||
+        isValidBuildCallValue(obj) ||
+        isValidBuildResourceValue(obj);
+};
 var isBuildPathValue = function (value) {
     return "object" === typeof value &&
         "string" === typeof value.path;
@@ -21,6 +63,19 @@ var isBuildCallValue = function (value) {
 var isBuildResourceValue = function (value) {
     return "object" === typeof value &&
         "string" === typeof value.resource;
+};
+var isValidBuildMode = function (mode) {
+    return "object" === typeof mode &&
+        !("base" in mode && !isValidString(mode.base)) &&
+        !("template" in mode && !isValidBuildValue(mode.template)) &&
+        !("output" in mode && !isValidBuildPathValue(mode.output)) &&
+        !("preprocesses" in mode && !isValidArray(mode.preprocesses, isValidString)) &&
+        !("parameters" in mode && !isValidObject(mode.parameters, isValidBuildValue));
+};
+var isValidBuildJson = function (json) {
+    return "object" === typeof json &&
+        "$schema" in json && schema === json.$schema &&
+        "modes" in json && isValidObject(json.modes, isValidBuildMode);
 };
 var startAt = new Date();
 var getBuildTime = function () { return new Date().getTime() - startAt.getTime(); };
@@ -98,8 +153,13 @@ try {
     };
     var basePath_1 = jsonPath.replace(/\/[^\/]+$/, "/");
     var master = require(jsonPath);
-    var json_1 = (_a = master.default) !== null && _a !== void 0 ? _a : {};
-    var modeJson = master[mode];
+    if (!isValidBuildJson(master)) {
+        console.error("\uD83D\uDEAB invalid JSON: ".concat(jsonPath));
+        console.error("\uD83D\uDEAB Use this JSON Schema: ".concat(schema));
+        throw new Error();
+    }
+    var json_1 = (_a = master.modes.default) !== null && _a !== void 0 ? _a : {};
+    var modeJson = master.modes[mode];
     var applyJsonObject_1 = function (target, source) {
         Object.keys(source).forEach(function (key) {
             var targetValue = target[key];
@@ -115,7 +175,7 @@ try {
     var applyJson_1 = function (master, target, source) {
         var base = source.base;
         if (base) {
-            var baseJson = master[base];
+            var baseJson = master.modes[base];
             if (baseJson) {
                 applyJson_1(master, target, baseJson);
             }

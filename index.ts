@@ -1,4 +1,14 @@
 'use strict';
+const schema = "https://raw.githubusercontent.com/wraith13/build.js/master/json-schema.json#";
+const isValidString = (obj: any): obj is string => "string" === typeof obj;
+const isValidArray = <ValueType>(obj: any, valueValidator: (value: any) => value is ValueType): obj is { [key: string]: ValueType } =>
+    "object" === typeof obj &&
+    Array.isArray(obj) &&
+    0 === obj.filter(i => ! valueValidator(i)).length;
+const isValidObject = <ValueType>(obj: any, valueValidator: (value: any) => value is ValueType): obj is { [key: string]: ValueType } =>
+    "object" === typeof obj &&
+    ! Array.isArray(obj) &&
+    0 === Object.keys(obj).filter(key => ! valueValidator(obj[key])).length;
 export type JsonableValue = null | boolean | number | string;
 export interface JsonableObject
 {
@@ -16,21 +26,58 @@ interface BuildPathValue extends JsonableObject
         text: string;
     };
 }
+const isValidBuildPathValue = (obj: any): obj is BuildPathValue =>
+    "object" === typeof obj &&
+    "path" in obj && isValidString(obj.path) &&
+    !
+    (
+        "replace" in obj &&
+        !
+        (
+            ("match" in obj.replace && isValidString(obj.replace.match)) &&
+            ("text" in obj.replace && isValidString(obj.replace.text))
+        )
+    );
 interface BuildJsonValue extends JsonableObject
 {
     json: string;
     key?: string | string[];
 }
+const isValidBuildJsonValue = (obj: any): obj is BuildJsonValue =>
+    "object" === typeof obj &&
+    "json" in obj && isValidString(obj.json) &&
+    !
+    (
+        "key" in obj &&
+        !
+        (
+            isValidString(obj.key) ||
+            isValidArray(obj.key, isValidString)
+        )
+    );
 interface BuildCallValue extends JsonableObject
 {
     call: string;
 }
+const isValidBuildCallValue = (obj: any): obj is BuildCallValue =>
+    "object" === typeof obj &&
+    "call" in obj && isValidString(obj.call);
 interface BuildResourceValue extends JsonableObject
 {
     resource: string;
     base?: string;
 }
+const isValidBuildResourceValue = (obj: any): obj is BuildResourceValue =>
+    "object" === typeof obj &&
+    "resource" in obj && isValidString(obj.resource) &&
+    ! ("base" in obj && ! isValidString(obj.base));
 type BuildValueType = string | BuildPathValue | BuildJsonValue | BuildCallValue | BuildResourceValue;
+const isValidBuildValue = (obj: any): obj is BuildValueType =>
+    isValidString(obj) ||
+    isValidBuildPathValue(obj) ||
+    isValidBuildJsonValue(obj) ||
+    isValidBuildCallValue(obj) ||
+    isValidBuildResourceValue(obj);
 const isBuildPathValue = (value: BuildValueType): value is BuildPathValue =>
     "object" === typeof value &&
     "string" === typeof value.path;
@@ -51,10 +98,22 @@ interface BuildMode extends JsonableObject
     preprocesses?: string[];
     parameters?: { [key: string]: BuildValueType; };
 }
+const isValidBuildMode = (mode: any): mode is BuildMode =>
+    "object" === typeof mode &&
+    ! ("base" in mode && ! isValidString(mode.base)) &&
+    ! ("template" in mode && ! isValidBuildValue(mode.template)) &&
+    ! ("output" in mode && ! isValidBuildPathValue(mode.output)) &&
+    ! ("preprocesses" in mode && ! isValidArray(mode.preprocesses, isValidString)) &&
+    ! ("parameters" in mode && ! isValidObject(mode.parameters, isValidBuildValue));
 type BuildJson =
 {
-    [mode: string]: BuildMode;
+    $schema: typeof schema,
+    modes: { [mode: string]: BuildMode; };
 };
+const isValidBuildJson = (json: any): json is BuildJson =>
+    "object" === typeof json &&
+    "$schema" in json && schema === json.$schema &&
+    "modes" in json && isValidObject(json.modes, isValidBuildMode);
 const startAt = new Date();
 const getBuildTime = () => new Date().getTime() - startAt.getTime();
 const jsonPath = process.argv[2];
@@ -146,9 +205,15 @@ try
         return null;
     };
     const basePath = jsonPath.replace(/\/[^\/]+$/, "/");
-    const master = require(jsonPath) as BuildJson;
-    const json = master.default ?? { };
-    const modeJson = master[mode];
+    const master = require(jsonPath);
+    if ( ! isValidBuildJson(master))
+    {
+        console.error(`🚫 invalid JSON: ${jsonPath}`);
+        console.error(`🚫 Use this JSON Schema: ${schema}`);
+        throw new Error();
+    }
+    const json = master.modes.default ?? { };
+    const modeJson = master.modes[mode];
     const applyJsonObject = (target: JsonableObject, source: JsonableObject) =>
     {
         Object.keys(source).forEach
@@ -173,7 +238,7 @@ try
         const base = source.base;
         if (base)
         {
-            const baseJson = master[base];
+            const baseJson = master.modes[base];
             if (baseJson)
             {
                 applyJson(master, target, baseJson);
@@ -251,5 +316,4 @@ catch
 {
     console.log(`🚫 ${jsonPath} ${mode} build failed: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s )`);
 }
-
-// how to run: `node ./build.js BUILD-JSON-PATH BUILD-MODE`
+// how to run: `node ./index.js BUILD-JSON-PATH BUILD-MODE`
