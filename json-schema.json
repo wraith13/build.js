@@ -133,10 +133,7 @@
             "type": "object",
             "properties": {
                 "$schema": {
-                    "type": "string",
-                    "enum": [
-                        "https://raw.githubusercontent.com/wraith13/build.js/master/json-schema.json#"
-                    ]
+                    "type": "string"
                 },
                 "modes": {
                     "type": "object",

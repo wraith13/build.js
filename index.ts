@@ -107,12 +107,12 @@ const isValidBuildMode = (mode: any): mode is BuildMode =>
     ! ("parameters" in mode && ! isValidObject(mode.parameters, isValidBuildValue));
 type BuildJson =
 {
-    $schema: typeof schema,
+    $schema: string; // typeof schema,
     modes: { [mode: string]: BuildMode; };
 };
 const isValidBuildJson = (json: any): json is BuildJson =>
     "object" === typeof json &&
-    "$schema" in json && schema === json.$schema &&
+    "$schema" in json && "string" === typeof json.$schema && // schema === json.$schema &&
     "modes" in json && isValidObject(json.modes, isValidBuildMode);
 const startAt = new Date();
 const getBuildTime = () => new Date().getTime() - startAt.getTime();

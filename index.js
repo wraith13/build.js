@@ -74,7 +74,7 @@ var isValidBuildMode = function (mode) {
 };
 var isValidBuildJson = function (json) {
     return "object" === typeof json &&
-        "$schema" in json && schema === json.$schema &&
+        "$schema" in json && "string" === typeof json.$schema && // schema === json.$schema &&
         "modes" in json && isValidObject(json.modes, isValidBuildMode);
 };
 var startAt = new Date();
