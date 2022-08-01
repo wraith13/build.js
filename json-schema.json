@@ -60,7 +60,13 @@
             "additionalProperties": false,
             "properties": {
                 "call": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "command",
+                        "command_options",
+                        "timestamp",
+                        "timestamp_tick"
+                    ]
                 }
             },
             "required": [
@@ -137,9 +143,16 @@
                 },
                 "modes": {
                     "type": "object",
+                    "properties": {
+                        "default": {
+                            "$ref": "#/definitions/Mode"
+                        }
+                    },
                     "additionalProperties": {
                         "$ref": "#/definitions/Mode"
-                    }
+                    },
+                    "required": [
+                    ]
                 }
             },
             "required": [
