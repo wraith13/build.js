@@ -133,7 +133,9 @@
                         "$ref": "#/definitions/Value"
                     }
                 }
-            }
+            },
+            "required": [
+            ]
         },
         "Root": {
             "type": "object",
