@@ -137,9 +137,9 @@ try {
                 case "command_options":
                     return process_1.argv.filter(function (_i, index) { return 2 <= index; }).join(" ");
                 case "timestamp":
-                    return "".concat(new Date());
+                    return "".concat(startAt);
                 case "timestamp_tick":
-                    return "".concat(new Date().getTime());
+                    return "".concat(startAt.getTime());
                 default:
                     console.error("\uD83D\uDEAB unknown call: ".concat(JSON.stringify(value)));
                     throw new Error();

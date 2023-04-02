@@ -189,9 +189,9 @@ try
             case "command_options":
                 return process.argv.filter((_i: string, index: number) => 2 <= index).join(" ");
             case "timestamp":
-                return `${new Date()}`;
+                return `${startAt}`;
             case "timestamp_tick":
-                return `${new Date().getTime()}`;
+                return `${startAt.getTime()}`;
             default:
                 console.error(`🚫 unknown call: ${JSON.stringify(value)}`);
                 throw new Error();
