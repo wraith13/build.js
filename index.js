@@ -3,6 +3,7 @@ var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isJsonableObject = void 0;
 var schema = "https://raw.githubusercontent.com/wraith13/build.js/master/json-schema.json#";
+var simpleDeepCopy = function (value) { return JSON.parse(JSON.stringify(value)); };
 var isValidString = function (obj) { return "string" === typeof obj; };
 var isValidArray = function (obj, valueValidator) {
     return "object" === typeof obj &&
@@ -64,11 +65,21 @@ var isBuildResourceValue = function (value) {
     return "object" === typeof value &&
         "string" === typeof value.resource;
 };
+var isSingleBuildMode = function (mode) { return undefined === mode.files; };
+//const isMultiBuildMode = (mode: BuildMode): mode is MultiBuildMode => undefined !== mode.files;
+var isValidBuildTarget = function (target) {
+    return null !== target &&
+        "object" === typeof target &&
+        "template" in target && isValidBuildValue(target.template) &&
+        "output" in target && isValidBuildPathValue(target.output) &&
+        !("parameters" in target && !isValidObject(target.parameters, isValidBuildValue));
+};
 var isValidBuildMode = function (mode) {
-    return "object" === typeof mode &&
+    return null !== mode &&
+        "object" === typeof mode &&
         !("base" in mode && !isValidString(mode.base)) &&
-        !("template" in mode && !isValidBuildValue(mode.template)) &&
-        !("output" in mode && !isValidBuildPathValue(mode.output)) &&
+        ((isValidBuildTarget(mode) && !("files" in mode)) ||
+            ("files" in mode && isValidArray(mode.files, isValidBuildTarget) && !("template" in mode) && !("output" in mode))) &&
         !("preprocesses" in mode && !isValidArray(mode.preprocesses, isValidString)) &&
         !("parameters" in mode && !isValidObject(mode.parameters, isValidBuildValue));
 };
@@ -151,15 +162,6 @@ try {
         }
         return null;
     };
-    var basePath_1 = jsonPath.replace(/\/[^\/]+$/, "/");
-    var master = require(jsonPath);
-    if (!isValidBuildJson(master)) {
-        console.error("\uD83D\uDEAB invalid JSON: ".concat(jsonPath));
-        console.error("\uD83D\uDEAB Use this JSON Schema: ".concat(schema));
-        throw new Error();
-    }
-    var json_1 = (_a = master.modes.default) !== null && _a !== void 0 ? _a : {};
-    var modeJson = master.modes[mode];
     var applyJsonObject_1 = function (target, source) {
         Object.keys(source).forEach(function (key) {
             var targetValue = target[key];
@@ -171,6 +173,7 @@ try {
                 target[key] = source[key];
             }
         });
+        return target;
     };
     var applyJson_1 = function (master, target, source) {
         var base = source.base;
@@ -186,37 +189,65 @@ try {
         }
         applyJsonObject_1(target, source);
     };
+    var buildFile_1 = function (template, output, parameters) {
+        if (!template) {
+            console.error("\uD83D\uDEAB no template");
+            throw new Error();
+        }
+        if (!output) {
+            console.error("\uD83D\uDEAB no output");
+            throw new Error();
+        }
+        var file = evalValue_1(basePath_1, template);
+        // Object.keys(parameters).forEach
+        // (
+        //     key =>
+        //     {
+        //         if (file === file.replace(new RegExp(key, "g"), ""))
+        //         {
+        //             console.error(`🚫 ${key} not found in ${JSON.stringify(template)}.`);
+        //             throw new Error();
+        //         }
+        //     }
+        // );
+        fs_1.writeFileSync(output.path, Object.keys(parameters).map(function (key) { return ({ key: key, work: evalValue_1(basePath_1, parameters[key]) }); })
+            .reduce(function (r, p) { return "string" === typeof p.work ? r.replace(new RegExp(p.key, "g"), p.work) : r; }, file));
+    };
+    var build = function (json) {
+        var _a;
+        ((json === null || json === void 0 ? void 0 : json.preprocesses) || []).forEach(function (command) {
+            console.log("\uD83D\uDC49 ".concat(command));
+            child_process_1.execSync(command, {
+                stdio: ["inherit", "inherit", "inherit"]
+            });
+        });
+        if (isSingleBuildMode(json)) {
+            buildFile_1(json.template, json.output, (_a = json.parameters) !== null && _a !== void 0 ? _a : {});
+        }
+        else {
+            json.files.forEach(function (i) {
+                var _a, _b;
+                return buildFile_1(i.template, i.output, applyJsonObject_1(simpleDeepCopy((_a = json.parameters) !== null && _a !== void 0 ? _a : {}), (_b = i.parameters) !== null && _b !== void 0 ? _b : {}));
+            });
+        }
+    };
+    var basePath_1 = jsonPath.replace(/\/[^\/]+$/, "/");
+    var master = require(jsonPath);
+    if (!isValidBuildJson(master)) {
+        console.error("\uD83D\uDEAB invalid JSON: ".concat(jsonPath));
+        console.error("\uD83D\uDEAB Use this JSON Schema: ".concat(schema));
+        throw new Error();
+    }
+    var json = (_a = master.modes.default) !== null && _a !== void 0 ? _a : {};
+    var modeJson = master.modes[mode];
     if (modeJson) {
-        applyJson_1(master, json_1, modeJson);
+        applyJson_1(master, json, modeJson);
     }
     else {
         console.error("\uD83D\uDEAB unknown mode: ".concat(JSON.stringify(mode), " in ").concat(JSON.stringify(Object.keys(master))));
         throw new Error();
     }
-    ((json_1 === null || json_1 === void 0 ? void 0 : json_1.preprocesses) || []).forEach(function (command) {
-        console.log("\uD83D\uDC49 ".concat(command));
-        child_process_1.execSync(command, {
-            stdio: ["inherit", "inherit", "inherit"]
-        });
-    });
-    if (!json_1.template) {
-        console.error("\uD83D\uDEAB no template");
-        throw new Error();
-    }
-    var template_1 = evalValue_1(basePath_1, json_1.template);
-    var parameters_1 = json_1.parameters || {};
-    Object.keys(parameters_1).forEach(function (key) {
-        if (template_1 === template_1.replace(new RegExp(key, "g"), "")) {
-            console.error("\uD83D\uDEAB ".concat(key, " not found in ").concat(JSON.stringify(json_1.template), "."));
-            throw new Error();
-        }
-    });
-    if (!json_1.output) {
-        console.error("\uD83D\uDEAB no output");
-        throw new Error();
-    }
-    fs_1.writeFileSync(json_1.output.path, Object.keys(parameters_1).map(function (key) { return ({ key: key, work: evalValue_1(basePath_1, parameters_1[key]) }); })
-        .reduce(function (r, p) { return "string" === typeof p.work ? r.replace(new RegExp(p.key, "g"), p.work) : r; }, template_1));
+    build(json);
     console.log("\u2705 ".concat(jsonPath, " ").concat(mode, " build end: ").concat(new Date(), " ( ").concat((getBuildTime() / 1000).toLocaleString(), "s )"));
 }
 catch (_b) {

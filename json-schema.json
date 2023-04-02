@@ -107,7 +107,29 @@
                 }
             ]
         },
-        "Mode": {
+        "BuildTarget": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "template": {
+                    "$ref": "#/definitions/Value"
+                },
+                "output": {
+                    "$ref": "#/definitions/PathValue"
+                },
+                "parameters": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/Value"
+                    }
+                }
+            },
+            "required": [
+                "template",
+                "output"
+            ]
+        },
+        "SingleMode": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -135,6 +157,49 @@
                 }
             },
             "required": [
+                "template",
+                "output"
+            ]
+        },
+        "MultiMode": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "base": {
+                    "type": "string"
+                },
+                "files": {
+                    "type": "array",
+                    "items":
+                    {
+                        "$ref": "#/definitions/BuildTarget"
+                    }
+                },
+                "preprocesses": {
+                    "type": "array",
+                    "items":
+                    {
+                        "type": "string"
+                    }
+                },
+                "parameters": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/Value"
+                    }
+                }
+            },
+            "required": [
+            ]
+        },
+        "Mode": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/SingleMode"
+                },
+                {
+                    "$ref": "#/definitions/MultiMode"
+                }
             ]
         },
         "Root": {

@@ -1,5 +1,6 @@
 'use strict';
 const schema = "https://raw.githubusercontent.com/wraith13/build.js/master/json-schema.json#";
+const simpleDeepCopy = <ValueType>(value: ValueType): ValueType => <ValueType>JSON.parse(JSON.stringify(value));
 const isValidString = (obj: any): obj is string => "string" === typeof obj;
 const isValidArray = <ValueType>(obj: any, valueValidator: (value: any) => value is ValueType): obj is { [key: string]: ValueType } =>
     "object" === typeof obj &&
@@ -90,19 +91,44 @@ const isBuildCallValue = (value: BuildValueType): value is BuildCallValue =>
 const isBuildResourceValue = (value: BuildValueType): value is BuildResourceValue =>
     "object" === typeof value &&
     "string" === typeof value.resource;
-interface BuildMode extends JsonableObject
+interface BuildTarget extends JsonableObject
+{
+    template: BuildValueType;
+    output: BuildPathValue;
+    parameters?: { [key: string]: BuildValueType; };
+}
+interface BuildModeBase extends JsonableObject
 {
     base?: string;
-    template?: BuildValueType;
-    output?: BuildPathValue;
     preprocesses?: string[];
     parameters?: { [key: string]: BuildValueType; };
 }
+interface SingleBuildMode extends BuildModeBase
+{
+    template: BuildValueType;
+    output: BuildPathValue;
+}
+interface MultiBuildMode extends BuildModeBase
+{
+    files: BuildTarget[];
+}
+type BuildMode = SingleBuildMode | MultiBuildMode;
+const isSingleBuildMode = (mode: BuildMode): mode is SingleBuildMode => undefined === mode.files;
+//const isMultiBuildMode = (mode: BuildMode): mode is MultiBuildMode => undefined !== mode.files;
+const isValidBuildTarget = (target: any): target is BuildTarget =>
+        null !== target &&
+        "object" === typeof target &&
+        "template" in target && isValidBuildValue(target.template) &&
+        "output" in target && isValidBuildPathValue(target.output) &&
+        ! ("parameters" in target && ! isValidObject(target.parameters, isValidBuildValue));
 const isValidBuildMode = (mode: any): mode is BuildMode =>
+    null !== mode &&
     "object" === typeof mode &&
     ! ("base" in mode && ! isValidString(mode.base)) &&
-    ! ("template" in mode && ! isValidBuildValue(mode.template)) &&
-    ! ("output" in mode && ! isValidBuildPathValue(mode.output)) &&
+    (
+        (isValidBuildTarget(mode) && ! ("files" in mode)) ||
+        ("files" in mode && isValidArray(mode.files, isValidBuildTarget)  && ! ("template" in mode) && ! ("output" in mode))
+    ) &&
     ! ("preprocesses" in mode && ! isValidArray(mode.preprocesses, isValidString)) &&
     ! ("parameters" in mode && ! isValidObject(mode.parameters, isValidBuildValue));
 type BuildJson =
@@ -204,17 +230,7 @@ try
         }
         return null;
     };
-    const basePath = jsonPath.replace(/\/[^\/]+$/, "/");
-    const master = require(jsonPath);
-    if ( ! isValidBuildJson(master))
-    {
-        console.error(`🚫 invalid JSON: ${jsonPath}`);
-        console.error(`🚫 Use this JSON Schema: ${schema}`);
-        throw new Error();
-    }
-    const json = master.modes.default ?? { };
-    const modeJson = master.modes[mode];
-    const applyJsonObject = (target: JsonableObject, source: JsonableObject) =>
+    const applyJsonObject = <TargetType extends JsonableObject, SourceType extends JsonableObject>(target: TargetType, source: SourceType): TargetType & SourceType =>
     {
         Object.keys(source).forEach
         (
@@ -228,10 +244,11 @@ try
                 }
                 else
                 {
-                    target[key] = source[key];
+                    (<any>target)[key] = source[key];
                 }
             }
         );
+        return <TargetType & SourceType>target;
     };
     const applyJson = (master: BuildJson, target: BuildMode, source: BuildMode) =>
     {
@@ -251,6 +268,91 @@ try
         }
         applyJsonObject(target, source);
     };
+    const buildFile = (template: BuildValueType, output: BuildPathValue, parameters: { [key: string]: BuildValueType; }) =>
+    {
+        if ( ! template)
+        {
+            console.error(`🚫 no template`);
+            throw new Error();
+        }
+        if ( ! output)
+        {
+            console.error(`🚫 no output`);
+            throw new Error();
+        }
+        const file = evalValue(basePath, template);
+        // Object.keys(parameters).forEach
+        // (
+        //     key =>
+        //     {
+        //         if (file === file.replace(new RegExp(key, "g"), ""))
+        //         {
+        //             console.error(`🚫 ${key} not found in ${JSON.stringify(template)}.`);
+        //             throw new Error();
+        //         }
+        //     }
+        // );
+        fs.writeFileSync
+        (
+            output.path,
+            Object.keys(parameters).map
+            (
+                key => ({ key, work: evalValue(basePath, parameters[key]) })
+            )
+            .reduce
+            (
+                (r, p) => "string" === typeof p.work ? r.replace(new RegExp(p.key, "g"), p.work): r,
+                file
+            )
+        );
+    }
+    const build = (json: BuildMode) =>
+    {
+        (json?.preprocesses || [ ]).forEach
+        (
+            command =>
+            {
+                console.log(`👉 ${command}`);
+                child_process.execSync
+                (
+                    command,
+                    {
+                        stdio: [ "inherit", "inherit", "inherit" ]
+                    }
+                );
+            }
+        );
+        if (isSingleBuildMode(json))
+        {
+            buildFile(json.template, json.output, json.parameters ?? { });
+        }
+        else
+        {
+            json.files.forEach
+            (
+                i => buildFile
+                (
+                    i.template,
+                    i.output,
+                    applyJsonObject
+                    (
+                        simpleDeepCopy(json.parameters ?? { }),
+                        i.parameters ?? { }
+                    )
+                )
+            );
+        }
+    };
+    const basePath = jsonPath.replace(/\/[^\/]+$/, "/");
+    const master = require(jsonPath);
+    if ( ! isValidBuildJson(master))
+    {
+        console.error(`🚫 invalid JSON: ${jsonPath}`);
+        console.error(`🚫 Use this JSON Schema: ${schema}`);
+        throw new Error();
+    }
+    const json = master.modes.default ?? { };
+    const modeJson = master.modes[mode];
     if (modeJson)
     {
         applyJson(master, json, modeJson);
@@ -260,56 +362,7 @@ try
         console.error(`🚫 unknown mode: ${JSON.stringify(mode)} in ${JSON.stringify(Object.keys(master))}`);
         throw new Error();
     }
-    (json?.preprocesses || [ ]).forEach
-    (
-        command =>
-        {
-            console.log(`👉 ${command}`);
-            child_process.execSync
-            (
-                command,
-                {
-                    stdio: [ "inherit", "inherit", "inherit" ]
-                }
-            );
-        }
-    );
-    if ( ! json.template)
-    {
-        console.error(`🚫 no template`);
-        throw new Error();
-    }
-    const template = evalValue(basePath, json.template);
-    const parameters = json.parameters || { };
-    Object.keys(parameters).forEach
-    (
-        key =>
-        {
-            if (template === template.replace(new RegExp(key, "g"), ""))
-            {
-                console.error(`🚫 ${key} not found in ${JSON.stringify(json.template)}.`);
-                throw new Error();
-            }
-        }
-    );
-    if ( ! json.output)
-    {
-        console.error(`🚫 no output`);
-        throw new Error();
-    }
-    fs.writeFileSync
-    (
-        json.output.path,
-        Object.keys(parameters).map
-        (
-            key => ({ key, work: evalValue(basePath, parameters[key]) })
-        )
-        .reduce
-        (
-            (r, p) => "string" === typeof p.work ? r.replace(new RegExp(p.key, "g"), p.work): r,
-            template
-        )
-    );
+    build(json);
     console.log(`✅ ${jsonPath} ${mode} build end: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s )`);
 }
 catch
