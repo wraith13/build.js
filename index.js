@@ -78,8 +78,9 @@ var isValidBuildMode = function (mode) {
     return null !== mode &&
         "object" === typeof mode &&
         !("base" in mode && !isValidString(mode.base)) &&
-        ((isValidBuildTarget(mode) && !("files" in mode)) ||
-            ("files" in mode && isValidArray(mode.files, isValidBuildTarget) && !("template" in mode) && !("output" in mode))) &&
+        !("template" in mode && !isValidBuildValue(mode.template)) &&
+        !("output" in mode && !isValidBuildPathValue(mode.output)) &&
+        !("files" in mode && !(isValidArray(mode.files, isValidBuildTarget) && !("template" in mode) && !("output" in mode))) &&
         !("preprocesses" in mode && !isValidArray(mode.preprocesses, isValidString)) &&
         !("parameters" in mode && !isValidObject(mode.parameters, isValidBuildValue));
 };

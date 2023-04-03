@@ -157,8 +157,6 @@
                 }
             },
             "required": [
-                "template",
-                "output"
             ]
         },
         "MultiMode": {
