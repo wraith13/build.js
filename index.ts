@@ -21,6 +21,7 @@ export const isJsonableObject = (value: Jsonable | undefined): value is Jsonable
 interface BuildPathValue extends JsonableObject
 {
     path: string;
+    encode?: "base64",
     replace?:
     {
         match: string;
@@ -174,6 +175,10 @@ try
                 {
                     result = result.replace(new RegExp(value.replace.match, "gmu"), evalValue(basePath, value.replace.text));
                 }
+            }
+            if ("base64" === value.encode)
+            {
+                result = btoa(result);
             }
             return result;
         }

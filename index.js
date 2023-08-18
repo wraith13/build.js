@@ -120,6 +120,9 @@ try {
                     result_1 = result_1.replace(new RegExp(value.replace.match, "gmu"), evalValue_1(basePath, value.replace.text));
                 }
             }
+            if ("base64" === value.encode) {
+                result_1 = btoa(result_1);
+            }
             return result_1;
         }
         else if (isBuildJsonValue(value)) {
