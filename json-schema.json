@@ -149,6 +149,10 @@
                             "type": "object",
                             "additionalProperties": {
                                 "$ref": "#/definitions/Value"
+                            },
+                            "[not]":
+                            {
+                                "required": [ "json"]
                             }
                         },
                         {
@@ -183,10 +187,21 @@
                     }
                 },
                 "parameters": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/Value"
-                    }
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/Value"
+                            },
+                            "[not]":
+                            {
+                                "required": [ "json"]
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/JsonValue"
+                        }
+                    ]
                 }
             },
             "required": [
@@ -214,10 +229,21 @@
                     }
                 },
                 "parameters": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/Value"
-                    }
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/Value"
+                            },
+                            "[not]":
+                            {
+                                "required": [ "json"]
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/JsonValue"
+                        }
+                    ]
                 }
             },
             "required": [
