@@ -18,17 +18,16 @@ export interface JsonableObject
 export type Jsonable = JsonableValue | Jsonable[] | JsonableObject;
 export const isJsonableObject = (value: Jsonable | undefined): value is JsonableObject =>
     "object" === typeof value && ! Array.isArray(value);
-interface BuildPathValue extends JsonableObject
+interface BuildTextPathValue extends JsonableObject
 {
     path: string;
-    encode?: "base64",
     replace?:
     {
         match: string;
         text: BuildValueType;
     };
 }
-const isValidBuildPathValue = (obj: any): obj is BuildPathValue =>
+const isValidBuildTextPathValue = (obj: any): obj is BuildTextPathValue =>
     "object" === typeof obj &&
     "path" in obj && isValidString(obj.path) &&
     !
@@ -39,7 +38,21 @@ const isValidBuildPathValue = (obj: any): obj is BuildPathValue =>
             ("match" in obj.replace && isValidString(obj.replace.match)) &&
             ("text" in obj.replace && isValidBuildValue(obj.replace.text))
         )
-    );
+    ) &&
+    ! ("encode" in obj);
+interface BuildBinaryPathValue extends JsonableObject
+{
+    path: string;
+    encode: "base64",
+}
+const isValidBuildBinaryPathValue = (obj: any): obj is BuildPathValue =>
+    "object" === typeof obj &&
+    "path" in obj && isValidString(obj.path) &&
+    "encode" in obj && isValidString(obj.path) &&
+    ! ("replace" in obj);
+type BuildPathValue = BuildTextPathValue | BuildBinaryPathValue;
+const isValidBuildPathValue = (obj: any): obj is BuildPathValue =>
+    isValidBuildTextPathValue(obj) || isValidBuildBinaryPathValue(obj);
 interface BuildJsonValue extends JsonableObject
 {
     json: string;
@@ -80,9 +93,14 @@ const isValidBuildValue = (obj: any): obj is BuildValueType =>
     isValidBuildJsonValue(obj) ||
     isValidBuildCallValue(obj) ||
     isValidBuildResourceValue(obj);
-const isBuildPathValue = (value: BuildValueType): value is BuildPathValue =>
+const isBuildTextPathValue = (value: BuildValueType): value is BuildPathValue =>
     "object" === typeof value &&
-    "string" === typeof value.path;
+    "string" === typeof value.path &&
+    undefined === value.encode;
+const isBuildBinaryPathValue = (value: BuildValueType): value is BuildBinaryPathValue =>
+    "object" === typeof value &&
+    "string" === typeof value.path &&
+    "string" === typeof value.encode;
 const isBuildJsonValue = (value: BuildValueType): value is BuildJsonValue =>
     "object" === typeof value &&
     "string" === typeof value.json;
@@ -159,7 +177,14 @@ try
             return value;
         }
         else
-        if (isBuildPathValue(value))
+        if (isBuildBinaryPathValue(value))
+        {
+            let result = fs.readFileSync(value.path);
+            result = result.toString(value.encode);
+            return result;
+        }
+        else
+        if (isBuildTextPathValue(value))
         {
             let result = fget(value.path);
             if (value.replace)
@@ -175,10 +200,6 @@ try
                 {
                     result = result.replace(new RegExp(value.replace.match, "gmu"), evalValue(basePath, value.replace.text));
                 }
-            }
-            if ("base64" === value.encode)
-            {
-                result = btoa(result);
             }
             return result;
         }
@@ -369,8 +390,9 @@ try
     build(json);
     console.log(`✅ ${jsonPath} ${mode} build end: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s )`);
 }
-catch
+catch(error)
 {
+    console.error(error);
     console.log(`🚫 ${jsonPath} ${mode} build failed: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s )`);
 }
 // how to run: `node ./index.js BUILD-JSON-PATH BUILD-MODE`

@@ -19,12 +19,22 @@ var isJsonableObject = function (value) {
     return "object" === typeof value && !Array.isArray(value);
 };
 exports.isJsonableObject = isJsonableObject;
-var isValidBuildPathValue = function (obj) {
+var isValidBuildTextPathValue = function (obj) {
     return "object" === typeof obj &&
         "path" in obj && isValidString(obj.path) &&
         !("replace" in obj &&
             !(("match" in obj.replace && isValidString(obj.replace.match)) &&
-                ("text" in obj.replace && isValidBuildValue(obj.replace.text))));
+                ("text" in obj.replace && isValidBuildValue(obj.replace.text)))) &&
+        !("encode" in obj);
+};
+var isValidBuildBinaryPathValue = function (obj) {
+    return "object" === typeof obj &&
+        "path" in obj && isValidString(obj.path) &&
+        "encode" in obj && isValidString(obj.path) &&
+        !("replace" in obj);
+};
+var isValidBuildPathValue = function (obj) {
+    return isValidBuildTextPathValue(obj) || isValidBuildBinaryPathValue(obj);
 };
 var isValidBuildJsonValue = function (obj) {
     return "object" === typeof obj &&
@@ -49,9 +59,15 @@ var isValidBuildValue = function (obj) {
         isValidBuildCallValue(obj) ||
         isValidBuildResourceValue(obj);
 };
-var isBuildPathValue = function (value) {
+var isBuildTextPathValue = function (value) {
     return "object" === typeof value &&
-        "string" === typeof value.path;
+        "string" === typeof value.path &&
+        undefined === value.encode;
+};
+var isBuildBinaryPathValue = function (value) {
+    return "object" === typeof value &&
+        "string" === typeof value.path &&
+        "string" === typeof value.encode;
 };
 var isBuildJsonValue = function (value) {
     return "object" === typeof value &&
@@ -110,7 +126,12 @@ try {
         if ("string" === typeof value) {
             return value;
         }
-        else if (isBuildPathValue(value)) {
+        else if (isBuildBinaryPathValue(value)) {
+            var result = fs_1.readFileSync(value.path);
+            result = result.toString(value.encode);
+            return result;
+        }
+        else if (isBuildTextPathValue(value)) {
             var result_1 = fget_1(value.path);
             if (value.replace) {
                 if (Array.isArray(value.replace)) {
@@ -119,9 +140,6 @@ try {
                 else {
                     result_1 = result_1.replace(new RegExp(value.replace.match, "gmu"), evalValue_1(basePath, value.replace.text));
                 }
-            }
-            if ("base64" === value.encode) {
-                result_1 = btoa(result_1);
             }
             return result_1;
         }
@@ -254,7 +272,8 @@ try {
     build(json);
     console.log("\u2705 ".concat(jsonPath, " ").concat(mode, " build end: ").concat(new Date(), " ( ").concat((getBuildTime() / 1000).toLocaleString(), "s )"));
 }
-catch (_b) {
+catch (error) {
+    console.error(error);
     console.log("\uD83D\uDEAB ".concat(jsonPath, " ").concat(mode, " build failed: ").concat(new Date(), " ( ").concat((getBuildTime() / 1000).toLocaleString(), "s )"));
 }
 //# sourceMappingURL=index.js.map

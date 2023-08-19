@@ -3,16 +3,12 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$ref": "#/definitions/Root",
     "definitions": {
-        "PathValue": {
+        "TextPathValue": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
                 "path": {
                     "type": "string"
-                },
-                "encode": {
-                    "type": "string",
-                    "enum": [ "base64" ]
                 },
                 "replace": {
                     "type": "object",
@@ -32,6 +28,32 @@
             },
             "required": [
                 "path"
+            ]
+        },
+        "BinaryPathValue": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "path": {
+                    "type": "string"
+                },
+                "encode": {
+                    "type": "string",
+                    "enum": [ "base64", "hex" ]
+                }
+            },
+            "required": [
+                "path", "encode"
+            ]
+        },
+        "PathValue": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/TextPathValue"
+                },
+                {
+                    "$ref": "#/definitions/BinaryPathValue"
+                }
             ]
         },
         "JsonValue": {
