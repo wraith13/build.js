@@ -144,10 +144,17 @@
                     "$ref": "#/definitions/PathValue"
                 },
                 "parameters": {
-                    "type": "object",
-                    "additionalProperties": {
-                        "$ref": "#/definitions/Value"
-                    }
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/Value"
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/JsonValue"
+                        }
+                    ]
                 }
             },
             "required": [

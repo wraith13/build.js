@@ -59,28 +59,11 @@ var isValidBuildValue = function (obj) {
         isValidBuildCallValue(obj) ||
         isValidBuildResourceValue(obj);
 };
-var isBuildTextPathValue = function (value) {
-    return "object" === typeof value &&
-        "string" === typeof value.path &&
-        undefined === value.encode;
-};
-var isBuildBinaryPathValue = function (value) {
-    return "object" === typeof value &&
-        "string" === typeof value.path &&
-        "string" === typeof value.encode;
-};
-var isBuildJsonValue = function (value) {
-    return "object" === typeof value &&
-        "string" === typeof value.json;
-};
-var isBuildCallValue = function (value) {
-    return "object" === typeof value &&
-        "string" === typeof value.call;
-};
-var isBuildResourceValue = function (value) {
-    return "object" === typeof value &&
-        "string" === typeof value.resource;
-};
+var isBuildTextPathValue = isValidBuildTextPathValue;
+var isBuildBinaryPathValue = isValidBuildPathValue;
+var isBuildJsonValue = isValidBuildJsonValue;
+var isBuildCallValue = isValidBuildCallValue;
+var isBuildResourceValue = isValidBuildResourceValue;
 var isSingleBuildMode = function (mode) { return undefined === mode.files; };
 //const isMultiBuildMode = (mode: BuildMode): mode is MultiBuildMode => undefined !== mode.files;
 var isValidBuildTarget = function (target) {
@@ -122,6 +105,20 @@ try {
         return path.map(function (i) { return undefined !== i ? i : ""; }).join("").replace(/\/\.\//gm, "/");
     };
     var fget_1 = function (path) { return fs_1.readFileSync(path, { encoding: "utf-8" }); };
+    var evalJsonValue_1 = function (value) {
+        var result = fget_1(value.json);
+        if (undefined !== value.key) {
+            var current_1 = JSON.parse(result);
+            if (Array.isArray(value.key)) {
+                value.key.forEach(function (k) { return current_1 = current_1[k]; });
+                result = "".concat(current_1);
+            }
+            else {
+                result = "".concat(current_1[value.key]);
+            }
+        }
+        return result;
+    };
     var evalValue_1 = function (basePath, value) {
         if ("string" === typeof value) {
             return value;
@@ -144,18 +141,7 @@ try {
             return result_1;
         }
         else if (isBuildJsonValue(value)) {
-            var result = fget_1(value.json);
-            if (undefined !== value.key) {
-                var current_1 = JSON.parse(result);
-                if (Array.isArray(value.key)) {
-                    value.key.forEach(function (k) { return current_1 = current_1[k]; });
-                    result = "".concat(current_1);
-                }
-                else {
-                    result = "".concat(current_1[value.key]);
-                }
-            }
-            return result;
+            return evalJsonValue_1(value);
         }
         else if (isBuildResourceValue(value)) {
             var resource_1 = require(makePath_1(basePath, value.resource));
@@ -183,6 +169,12 @@ try {
             throw new Error();
         }
         return null;
+    };
+    var evalParamets_1 = function (parameters) {
+        if (isValidBuildJsonValue(parameters)) {
+            return evalJsonValue_1(parameters);
+        }
+        return parameters;
     };
     var applyJsonObject_1 = function (target, source) {
         Object.keys(source).forEach(function (key) {
@@ -244,12 +236,12 @@ try {
             });
         });
         if (isSingleBuildMode(json)) {
-            buildFile_1(json.template, json.output, (_a = json.parameters) !== null && _a !== void 0 ? _a : {});
+            buildFile_1(json.template, json.output, evalParamets_1((_a = json.parameters) !== null && _a !== void 0 ? _a : {}));
         }
         else {
             json.files.forEach(function (i) {
                 var _a, _b;
-                return buildFile_1(i.template, i.output, applyJsonObject_1(simpleDeepCopy((_a = json.parameters) !== null && _a !== void 0 ? _a : {}), (_b = i.parameters) !== null && _b !== void 0 ? _b : {}));
+                return buildFile_1(i.template, i.output, applyJsonObject_1(simpleDeepCopy(evalParamets_1((_a = json.parameters) !== null && _a !== void 0 ? _a : {})), evalParamets_1((_b = i.parameters) !== null && _b !== void 0 ? _b : {})));
             });
         }
     };

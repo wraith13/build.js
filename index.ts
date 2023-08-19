@@ -93,34 +93,22 @@ const isValidBuildValue = (obj: any): obj is BuildValueType =>
     isValidBuildJsonValue(obj) ||
     isValidBuildCallValue(obj) ||
     isValidBuildResourceValue(obj);
-const isBuildTextPathValue = (value: BuildValueType): value is BuildPathValue =>
-    "object" === typeof value &&
-    "string" === typeof value.path &&
-    undefined === value.encode;
-const isBuildBinaryPathValue = (value: BuildValueType): value is BuildBinaryPathValue =>
-    "object" === typeof value &&
-    "string" === typeof value.path &&
-    "string" === typeof value.encode;
-const isBuildJsonValue = (value: BuildValueType): value is BuildJsonValue =>
-    "object" === typeof value &&
-    "string" === typeof value.json;
-const isBuildCallValue = (value: BuildValueType): value is BuildCallValue =>
-    "object" === typeof value &&
-    "string" === typeof value.call;
-const isBuildResourceValue = (value: BuildValueType): value is BuildResourceValue =>
-    "object" === typeof value &&
-    "string" === typeof value.resource;
+const isBuildTextPathValue = isValidBuildTextPathValue;
+const isBuildBinaryPathValue = isValidBuildPathValue;
+const isBuildJsonValue = isValidBuildJsonValue;
+const isBuildCallValue = isValidBuildCallValue;
+const isBuildResourceValue = isValidBuildResourceValue;
 interface BuildTarget extends JsonableObject
 {
     template: BuildValueType;
     output: BuildPathValue;
-    parameters?: { [key: string]: BuildValueType; };
+    parameters?: { [key: string]: BuildValueType; } | BuildJsonValue;
 }
 interface BuildModeBase extends JsonableObject
 {
     base?: string;
     preprocesses?: string[];
-    parameters?: { [key: string]: BuildValueType; };
+    parameters?: { [key: string]: BuildValueType; } | BuildJsonValue;
 }
 interface SingleBuildMode extends BuildModeBase
 {
@@ -170,6 +158,24 @@ try
     const fs = require("fs");
     const makePath = (...path : (undefined | string)[]) => path.map(i => undefined !== i ? i: "").join("").replace(/\/\.\//gm, "/");
     const fget = (path: string) => fs.readFileSync(path, { encoding: "utf-8" });
+    const evalJsonValue = (value: BuildJsonValue) =>
+    {
+        let result = fget(value.json);
+        if (undefined !== value.key)
+        {
+            let current = JSON.parse(result);
+            if (Array.isArray(value.key))
+            {
+                value.key.forEach(k => current = current[k]);
+                result = `${current}`;
+            }
+            else
+            {
+                result = `${current[value.key]}`;
+            }
+        }
+        return result;
+    };
     const evalValue = (basePath: string, value: BuildValueType) =>
     {
         if ("string" === typeof value)
@@ -206,21 +212,7 @@ try
         else
         if (isBuildJsonValue(value))
         {
-            let result = fget(value.json);
-            if (undefined !== value.key)
-            {
-                let current = JSON.parse(result);
-                if (Array.isArray(value.key))
-                {
-                    value.key.forEach(k => current = current[k]);
-                    result = `${current}`;
-                }
-                else
-                {
-                    result = `${current[value.key]}`;
-                }
-            }
-            return result;
+            return evalJsonValue(value);
         }
         else
         if (isBuildResourceValue(value))
@@ -255,6 +247,14 @@ try
         }
         return null;
     };
+    const evalParamets = (parameters: { [key: string]: BuildValueType; } | BuildJsonValue): { [key: string]: BuildValueType; } =>
+    {
+        if (isValidBuildJsonValue(parameters))
+        {
+            return evalJsonValue(parameters);
+        }
+        return parameters;
+    }
     const applyJsonObject = <TargetType extends JsonableObject, SourceType extends JsonableObject>(target: TargetType, source: SourceType): TargetType & SourceType =>
     {
         Object.keys(source).forEach
@@ -349,7 +349,7 @@ try
         );
         if (isSingleBuildMode(json))
         {
-            buildFile(json.template, json.output, json.parameters ?? { });
+            buildFile(json.template, json.output, evalParamets(json.parameters ?? { }));
         }
         else
         {
@@ -361,8 +361,8 @@ try
                     i.output,
                     applyJsonObject
                     (
-                        simpleDeepCopy(json.parameters ?? { }),
-                        i.parameters ?? { }
+                        simpleDeepCopy(evalParamets(json.parameters ?? { })),
+                        evalParamets(i.parameters ?? { })
                     )
                 )
             );
