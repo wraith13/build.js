@@ -167,11 +167,11 @@ try
             if (Array.isArray(value.key))
             {
                 value.key.forEach(k => current = current[k]);
-                result = `${current}`;
+                result = current;
             }
             else
             {
-                result = `${current[value.key]}`;
+                result = current[value.key];
             }
         }
         return result;

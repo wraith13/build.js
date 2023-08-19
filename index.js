@@ -111,10 +111,10 @@ try {
             var current_1 = JSON.parse(result);
             if (Array.isArray(value.key)) {
                 value.key.forEach(function (k) { return current_1 = current_1[k]; });
-                result = "".concat(current_1);
+                result = current_1;
             }
             else {
-                result = "".concat(current_1[value.key]);
+                result = current_1[value.key];
             }
         }
         return result;
