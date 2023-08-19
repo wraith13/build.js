@@ -71,7 +71,7 @@ var isValidBuildTarget = function (target) {
         "object" === typeof target &&
         "template" in target && isValidBuildValue(target.template) &&
         "output" in target && isValidBuildPathValue(target.output) &&
-        !("parameters" in target && !isValidObject(target.parameters, isValidBuildValue));
+        !("parameters" in target && (!isValidObject(target.parameters, isValidBuildValue) && !isValidBuildJsonValue(target.parameters)));
 };
 var isValidBuildMode = function (mode) {
     return null !== mode &&
@@ -81,7 +81,7 @@ var isValidBuildMode = function (mode) {
         !("output" in mode && !isValidBuildPathValue(mode.output)) &&
         !("files" in mode && !(isValidArray(mode.files, isValidBuildTarget) && !("template" in mode) && !("output" in mode))) &&
         !("preprocesses" in mode && !isValidArray(mode.preprocesses, isValidString)) &&
-        !("parameters" in mode && !isValidObject(mode.parameters, isValidBuildValue));
+        !("parameters" in mode && (!isValidObject(mode.parameters, isValidBuildValue) && !isValidBuildJsonValue(mode.parameters)));
 };
 var isValidBuildJson = function (json) {
     return "object" === typeof json &&

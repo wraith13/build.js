@@ -127,7 +127,7 @@ const isValidBuildTarget = (target: any): target is BuildTarget =>
         "object" === typeof target &&
         "template" in target && isValidBuildValue(target.template) &&
         "output" in target && isValidBuildPathValue(target.output) &&
-        ! ("parameters" in target && ! isValidObject(target.parameters, isValidBuildValue));
+        ! ("parameters" in target && ( ! isValidObject(target.parameters, isValidBuildValue) && ! isValidBuildJsonValue(target.parameters)));
 const isValidBuildMode = (mode: any): mode is BuildMode =>
     null !== mode &&
     "object" === typeof mode &&
@@ -136,7 +136,7 @@ const isValidBuildMode = (mode: any): mode is BuildMode =>
     ! ("output" in mode && ! isValidBuildPathValue(mode.output)) &&
     ! ("files" in mode && ! (isValidArray(mode.files, isValidBuildTarget) && ! ("template" in mode) && ! ("output" in mode))) &&
     ! ("preprocesses" in mode && ! isValidArray(mode.preprocesses, isValidString)) &&
-    ! ("parameters" in mode && ! isValidObject(mode.parameters, isValidBuildValue));
+    ! ("parameters" in mode && ( ! isValidObject(mode.parameters, isValidBuildValue) && ! isValidBuildJsonValue(mode.parameters)));
 type BuildJson =
 {
     $schema: string; // typeof schema,
