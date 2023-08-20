@@ -200,6 +200,40 @@
                 "references"
             ]
         },
+        "BuildMetaTarget": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "meta": {
+                    "$ref": "#/definitions/BuildTarget"
+                },
+                "parameters": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items":
+                            {
+                                "type": "object",
+                                "additionalProperties": {
+                                    "$ref": "#/definitions/Value"
+                                },
+                                "not":
+                                {
+                                    "required": [ "json"]
+                                }
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/JsonValue"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "meta",
+                "parameters"
+            ]
+        },
         "BuildTarget": {
             "oneOf": [
                 {

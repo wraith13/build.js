@@ -63,6 +63,9 @@ var isBuildBinaryPathValue = isValidBuildPathValue;
 var isBuildJsonValue = isValidBuildJsonValue;
 var isBuildCallValue = isValidBuildCallValue;
 var isBuildResourceValue = isValidBuildResourceValue;
+var isValidPrimeBuildParameters = function (obj) {
+    return isValidObject(obj, isValidBuildValue);
+};
 var isSingleBuildMode = function (mode) { return undefined === mode.steps; };
 //const isMultiBuildMode = (mode: BuildMode): mode is MultiBuildMode => undefined !== mode.steps;
 var isValidPrimeBuildTarget = function (target) {
@@ -70,7 +73,7 @@ var isValidPrimeBuildTarget = function (target) {
         "object" === typeof target &&
         "template" in target && isValidBuildValue(target.template) &&
         "output" in target && isValidBuildPathValue(target.output) &&
-        !("parameters" in target && (!isValidObject(target.parameters, isValidBuildValue) && !isValidBuildJsonValue(target.parameters)));
+        !("parameters" in target && (!isValidPrimeBuildParameters(target.parameters) && !isValidBuildJsonValue(target.parameters)));
 };
 var isValidProcessBuildTarget = function (target) {
     return null !== target &&
@@ -82,8 +85,14 @@ var isValidReferenceBuildTarget = function (target) {
         "object" === typeof target &&
         "references" in target && isValidString(target.references);
 };
+var isValidMetaBuildTarget = function (target) {
+    return null !== target &&
+        "object" === typeof target &&
+        "meta" in target && isValidBuildTarget(target.meta) &&
+        "parameters" in target && (isValidArray(target.parameters, isValidPrimeBuildParameters) || isValidBuildJsonValue(target.parameters));
+};
 var isValidBuildTarget = function (target) {
-    return isValidPrimeBuildTarget(target) || isValidProcessBuildTarget(target) || isValidReferenceBuildTarget(target);
+    return isValidPrimeBuildTarget(target) || isValidProcessBuildTarget(target) || isValidReferenceBuildTarget(target) || isValidMetaBuildTarget(target);
 };
 var isValidBuildMode = function (mode) {
     return null !== mode &&
@@ -92,7 +101,7 @@ var isValidBuildMode = function (mode) {
         !("template" in mode && !isValidBuildValue(mode.template)) &&
         !("output" in mode && !isValidBuildPathValue(mode.output)) &&
         !("steps" in mode && !(isValidArray(mode.steps, isValidBuildTarget) && !("template" in mode) && !("output" in mode))) &&
-        !("parameters" in mode && (!isValidObject(mode.parameters, isValidBuildValue) && !isValidBuildJsonValue(mode.parameters)));
+        !("parameters" in mode && (!isValidPrimeBuildParameters(mode.parameters) && !isValidBuildJsonValue(mode.parameters)));
 };
 var isValidBuildJson = function (json) {
     return "object" === typeof json &&
@@ -181,7 +190,7 @@ try {
         }
         return null;
     };
-    var evalParamets_1 = function (parameters) {
+    var evalParameters_1 = function (parameters) {
         if (isValidBuildJsonValue(parameters)) {
             return evalJsonValue_1(parameters);
         }
@@ -214,6 +223,10 @@ try {
         }
         applyJsonObject_1(target, source);
     };
+    var applyParameters_1 = function (text, parameters) {
+        return Object.keys(parameters).map(function (key) { return ({ key: key, work: evalValue_1(basePath_1, parameters[key]) }); })
+            .reduce(function (r, p) { return "string" === typeof p.work ? r.replace(new RegExp(p.key, "g"), p.work) : r; }, text);
+    };
     var buildFile_1 = function (template, output, parameters) {
         if (!template) {
             console.error("\uD83D\uDEAB no template");
@@ -235,13 +248,12 @@ try {
         //         }
         //     }
         // );
-        fs_1.writeFileSync(output.path, Object.keys(parameters).map(function (key) { return ({ key: key, work: evalValue_1(basePath_1, parameters[key]) }); })
-            .reduce(function (r, p) { return "string" === typeof p.work ? r.replace(new RegExp(p.key, "g"), p.work) : r; }, file));
+        fs_1.writeFileSync(output.path, applyParameters_1(file, parameters));
     };
     var buildTrget_1 = function (target, parameters) {
         var _a;
         if (isValidPrimeBuildTarget(target)) {
-            buildFile_1(target.template, target.output, applyJsonObject_1(simpleDeepCopy(parameters), evalParamets_1((_a = target.parameters) !== null && _a !== void 0 ? _a : {})));
+            buildFile_1(target.template, target.output, applyJsonObject_1(simpleDeepCopy(parameters), evalParameters_1((_a = target.parameters) !== null && _a !== void 0 ? _a : {})));
         }
         else if (isValidProcessBuildTarget(target)) {
             (Array.isArray(target.processes) ? target.processes : [target.processes,]).forEach(function (command) {
@@ -255,6 +267,20 @@ try {
             (Array.isArray(target.references) ? target.references : [target.references,])
                 .forEach(function (reference) { return build_1(reference); });
         }
+        else if (isValidMetaBuildTarget(target)) {
+            var parameters_1 = evalParameters_1(target.parameters);
+            if (isValidArray(parameters_1, isValidPrimeBuildParameters)) {
+                parameters_1.forEach(function (p) { return build_1(JSON.parse(applyParameters_1(JSON.stringify(target.meta), p))); });
+            }
+            else {
+                console.error("\uD83D\uDEAB invalid meta build parameters: ".concat(JSON.stringify(target)));
+                throw new Error();
+            }
+        }
+        else {
+            console.error("\uD83D\uDEAB unknown build target: ".concat(JSON.stringify(target)));
+            throw new Error();
+        }
     };
     var build_1 = function (mode) {
         var _a, _b;
@@ -267,7 +293,7 @@ try {
             console.error("\uD83D\uDEAB unknown mode: ".concat(JSON.stringify(mode), " in ").concat(JSON.stringify(Object.keys(master_1))));
             throw new Error();
         }
-        var parameters = evalParamets_1((_b = json.parameters) !== null && _b !== void 0 ? _b : {});
+        var parameters = evalParameters_1((_b = json.parameters) !== null && _b !== void 0 ? _b : {});
         if (isSingleBuildMode(json)) {
             buildTrget_1(json, parameters);
         }

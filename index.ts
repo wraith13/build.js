@@ -2,7 +2,7 @@
 const schema = "https://raw.githubusercontent.com/wraith13/build.js/master/json-schema.json#";
 const simpleDeepCopy = <ValueType>(value: ValueType): ValueType => <ValueType>JSON.parse(JSON.stringify(value));
 const isValidString = (obj: any): obj is string => "string" === typeof obj;
-const isValidArray = <ValueType>(obj: any, valueValidator: (value: any) => value is ValueType): obj is { [key: string]: ValueType } =>
+const isValidArray = <ValueType>(obj: any, valueValidator: (value: any) => value is ValueType): obj is ValueType[] =>
     "object" === typeof obj &&
     Array.isArray(obj) &&
     0 === obj.filter(i => ! valueValidator(i)).length;
@@ -98,6 +98,8 @@ const isBuildBinaryPathValue = isValidBuildPathValue;
 const isBuildJsonValue = isValidBuildJsonValue;
 const isBuildCallValue = isValidBuildCallValue;
 const isBuildResourceValue = isValidBuildResourceValue;
+const isValidPrimeBuildParameters = (obj: any): obj is { [key: string]: BuildValueType } =>
+    isValidObject(obj, isValidBuildValue);
 interface BuildPrimeTarget extends JsonableObject
 {
     template: BuildValueType;
@@ -112,7 +114,12 @@ interface BuildReferenceTarget extends JsonableObject
 {
     references: string;
 }
-type BuildTarget = BuildPrimeTarget | BuildProcessTarget | BuildReferenceTarget;
+interface BuildMetaTarget extends JsonableObject
+{
+    meta: BuildTarget;
+    parameters: { [key: string]: BuildValueType; } | BuildJsonValue;
+}
+type BuildTarget = BuildPrimeTarget | BuildProcessTarget | BuildReferenceTarget | BuildMetaTarget;
 interface BuildModeBase extends JsonableObject
 {
     base?: string;
@@ -132,7 +139,7 @@ const isValidPrimeBuildTarget = (target: any): target is BuildPrimeTarget =>
     "object" === typeof target &&
     "template" in target && isValidBuildValue(target.template) &&
     "output" in target && isValidBuildPathValue(target.output) &&
-    ! ("parameters" in target && ( ! isValidObject(target.parameters, isValidBuildValue) && ! isValidBuildJsonValue(target.parameters)));
+    ! ("parameters" in target && ( ! isValidPrimeBuildParameters(target.parameters) && ! isValidBuildJsonValue(target.parameters)));
 const isValidProcessBuildTarget = (target: any): target is BuildProcessTarget =>
     null !== target &&
     "object" === typeof target &&
@@ -141,8 +148,13 @@ const isValidReferenceBuildTarget = (target: any): target is BuildReferenceTarge
     null !== target &&
     "object" === typeof target &&
     "references" in target && isValidString(target.references);
+const isValidMetaBuildTarget = (target: any): target is BuildMetaTarget =>
+    null !== target &&
+    "object" === typeof target &&
+    "meta" in target && isValidBuildTarget(target.meta) &&
+    "parameters" in target && (isValidArray(target.parameters, isValidPrimeBuildParameters) || isValidBuildJsonValue(target.parameters));
 const isValidBuildTarget = (target: any): target is BuildTarget =>
-    isValidPrimeBuildTarget(target) || isValidProcessBuildTarget(target) || isValidReferenceBuildTarget(target);
+    isValidPrimeBuildTarget(target) || isValidProcessBuildTarget(target) || isValidReferenceBuildTarget(target) || isValidMetaBuildTarget(target);
 const isValidBuildMode = (mode: any): mode is BuildMode =>
     null !== mode &&
     "object" === typeof mode &&
@@ -150,7 +162,7 @@ const isValidBuildMode = (mode: any): mode is BuildMode =>
     ! ("template" in mode && ! isValidBuildValue(mode.template)) &&
     ! ("output" in mode && ! isValidBuildPathValue(mode.output)) &&
     ! ("steps" in mode && ! (isValidArray(mode.steps, isValidBuildTarget) && ! ("template" in mode) && ! ("output" in mode))) &&
-    ! ("parameters" in mode && ( ! isValidObject(mode.parameters, isValidBuildValue) && ! isValidBuildJsonValue(mode.parameters)));
+    ! ("parameters" in mode && ( ! isValidPrimeBuildParameters(mode.parameters) && ! isValidBuildJsonValue(mode.parameters)));
 type BuildJson =
 {
     $schema: string; // typeof schema,
@@ -261,7 +273,7 @@ try
         }
         return null;
     };
-    const evalParamets = (parameters: { [key: string]: BuildValueType; } | BuildJsonValue): { [key: string]: BuildValueType; } =>
+    const evalParameters = (parameters: { [key: string]: BuildValueType; } | BuildJsonValue): { [key: string]: BuildValueType; } =>
     {
         if (isValidBuildJsonValue(parameters))
         {
@@ -307,6 +319,16 @@ try
         }
         applyJsonObject(target, source);
     };
+    const applyParameters = (text: string, parameters: { [key: string]: BuildValueType; }) =>
+        Object.keys(parameters).map
+        (
+            key => ({ key, work: evalValue(basePath, parameters[key]) })
+        )
+        .reduce
+        (
+            (r, p) => "string" === typeof p.work ? r.replace(new RegExp(p.key, "g"), p.work): r,
+            text
+        );
     const buildFile = (template: BuildValueType, output: BuildPathValue, parameters: { [key: string]: BuildValueType; }) =>
     {
         if ( ! template)
@@ -334,15 +356,7 @@ try
         fs.writeFileSync
         (
             output.path,
-            Object.keys(parameters).map
-            (
-                key => ({ key, work: evalValue(basePath, parameters[key]) })
-            )
-            .reduce
-            (
-                (r, p) => "string" === typeof p.work ? r.replace(new RegExp(p.key, "g"), p.work): r,
-                file
-            )
+            applyParameters(file, parameters)
         );
     }
     const buildTrget = (target: BuildTarget, parameters: { [key: string]: BuildValueType, }) =>
@@ -356,7 +370,7 @@ try
                 applyJsonObject
                 (
                     simpleDeepCopy(parameters),
-                    evalParamets(target.parameters ?? { })
+                    evalParameters(target.parameters ?? { })
                 )
             );
         }
@@ -384,6 +398,25 @@ try
             (Array.isArray(target.references) ? target.references: [ target.references, ])
                 .forEach(reference => build(reference));
         }
+        else
+        if (isValidMetaBuildTarget(target))
+        {
+            const parameters = evalParameters(target.parameters);
+            if (isValidArray(parameters, isValidPrimeBuildParameters))
+            {
+                parameters.forEach(p => build(JSON.parse(applyParameters(JSON.stringify(target.meta), p))));
+            }
+            else
+            {
+                console.error(`🚫 invalid meta build parameters: ${JSON.stringify(target)}`);
+                throw new Error();
+            }
+        }
+        else
+        {
+            console.error(`🚫 unknown build target: ${JSON.stringify(target)}`);
+            throw new Error();
+        }
     };
     const build = (mode: string) =>
     {
@@ -398,7 +431,7 @@ try
             console.error(`🚫 unknown mode: ${JSON.stringify(mode)} in ${JSON.stringify(Object.keys(master))}`);
             throw new Error();
         }
-        const parameters = evalParamets((json as BuildModeBase).parameters ?? { });
+        const parameters = evalParameters((json as BuildModeBase).parameters ?? { });
         if (isSingleBuildMode(json))
         {
             buildTrget(json, parameters);
