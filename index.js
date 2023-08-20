@@ -1,5 +1,4 @@
 'use strict';
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isJsonableObject = void 0;
 var schema = "https://raw.githubusercontent.com/wraith13/build.js/master/json-schema.json#";
@@ -64,14 +63,27 @@ var isBuildBinaryPathValue = isValidBuildPathValue;
 var isBuildJsonValue = isValidBuildJsonValue;
 var isBuildCallValue = isValidBuildCallValue;
 var isBuildResourceValue = isValidBuildResourceValue;
-var isSingleBuildMode = function (mode) { return undefined === mode.files; };
-//const isMultiBuildMode = (mode: BuildMode): mode is MultiBuildMode => undefined !== mode.files;
-var isValidBuildTarget = function (target) {
+var isSingleBuildMode = function (mode) { return undefined === mode.steps; };
+//const isMultiBuildMode = (mode: BuildMode): mode is MultiBuildMode => undefined !== mode.steps;
+var isValidPrimeBuildTarget = function (target) {
     return null !== target &&
         "object" === typeof target &&
         "template" in target && isValidBuildValue(target.template) &&
         "output" in target && isValidBuildPathValue(target.output) &&
         !("parameters" in target && (!isValidObject(target.parameters, isValidBuildValue) && !isValidBuildJsonValue(target.parameters)));
+};
+var isValidProcessBuildTarget = function (target) {
+    return null !== target &&
+        "object" === typeof target &&
+        "processes" in target && (isValidString(target.processes) || isValidArray(target.processes, isValidString));
+};
+var isValidReferenceBuildTarget = function (target) {
+    return null !== target &&
+        "object" === typeof target &&
+        "references" in target && isValidString(target.references);
+};
+var isValidBuildTarget = function (target) {
+    return isValidPrimeBuildTarget(target) || isValidProcessBuildTarget(target) || isValidReferenceBuildTarget(target);
 };
 var isValidBuildMode = function (mode) {
     return null !== mode &&
@@ -79,8 +91,7 @@ var isValidBuildMode = function (mode) {
         !("base" in mode && !isValidString(mode.base)) &&
         !("template" in mode && !isValidBuildValue(mode.template)) &&
         !("output" in mode && !isValidBuildPathValue(mode.output)) &&
-        !("files" in mode && !(isValidArray(mode.files, isValidBuildTarget) && !("template" in mode) && !("output" in mode))) &&
-        !("preprocesses" in mode && !isValidArray(mode.preprocesses, isValidString)) &&
+        !("steps" in mode && !(isValidArray(mode.steps, isValidBuildTarget) && !("template" in mode) && !("output" in mode))) &&
         !("parameters" in mode && (!isValidObject(mode.parameters, isValidBuildValue) && !isValidBuildJsonValue(mode.parameters)));
 };
 var isValidBuildJson = function (json) {
@@ -227,41 +238,51 @@ try {
         fs_1.writeFileSync(output.path, Object.keys(parameters).map(function (key) { return ({ key: key, work: evalValue_1(basePath_1, parameters[key]) }); })
             .reduce(function (r, p) { return "string" === typeof p.work ? r.replace(new RegExp(p.key, "g"), p.work) : r; }, file));
     };
-    var build = function (json) {
+    var buildTrget_1 = function (target, parameters) {
         var _a;
-        ((json === null || json === void 0 ? void 0 : json.preprocesses) || []).forEach(function (command) {
-            console.log("\uD83D\uDC49 ".concat(command));
-            child_process_1.execSync(command, {
-                stdio: ["inherit", "inherit", "inherit"]
+        if (isValidPrimeBuildTarget(target)) {
+            buildFile_1(target.template, target.output, applyJsonObject_1(simpleDeepCopy(parameters), evalParamets_1((_a = target.parameters) !== null && _a !== void 0 ? _a : {})));
+        }
+        else if (isValidProcessBuildTarget(target)) {
+            (Array.isArray(target.processes) ? target.processes : [target.processes,]).forEach(function (command) {
+                console.log("\uD83D\uDC49 ".concat(command));
+                child_process_1.execSync(command, {
+                    stdio: ["inherit", "inherit", "inherit"]
+                });
             });
-        });
-        if (isSingleBuildMode(json)) {
-            buildFile_1(json.template, json.output, evalParamets_1((_a = json.parameters) !== null && _a !== void 0 ? _a : {}));
+        }
+        else if (isValidReferenceBuildTarget(target)) {
+            (Array.isArray(target.references) ? target.references : [target.references,])
+                .forEach(function (reference) { return build_1(reference); });
+        }
+    };
+    var build_1 = function (mode) {
+        var _a, _b, _c;
+        var json = simpleDeepCopy((_a = master_1.modes.default) !== null && _a !== void 0 ? _a : {});
+        var modeJson = master_1.modes[mode];
+        if (modeJson) {
+            applyJson_1(master_1, json, modeJson);
         }
         else {
-            json.files.forEach(function (i) {
-                var _a, _b;
-                return buildFile_1(i.template, i.output, applyJsonObject_1(simpleDeepCopy(evalParamets_1((_a = json.parameters) !== null && _a !== void 0 ? _a : {})), evalParamets_1((_b = i.parameters) !== null && _b !== void 0 ? _b : {})));
-            });
+            console.error("\uD83D\uDEAB unknown mode: ".concat(JSON.stringify(mode), " in ").concat(JSON.stringify(Object.keys(master_1))));
+            throw new Error();
+        }
+        if (isSingleBuildMode(json)) {
+            buildFile_1(json.template, json.output, evalParamets_1((_b = json.parameters) !== null && _b !== void 0 ? _b : {}));
+        }
+        else {
+            var parameters_1 = evalParamets_1((_c = json.parameters) !== null && _c !== void 0 ? _c : {});
+            json.steps.forEach(function (i) { return buildTrget_1(i, parameters_1); });
         }
     };
     var basePath_1 = jsonPath.replace(/\/[^\/]+$/, "/");
-    var master = require(jsonPath);
-    if (!isValidBuildJson(master)) {
+    var master_1 = require(jsonPath);
+    if (!isValidBuildJson(master_1)) {
         console.error("\uD83D\uDEAB invalid JSON: ".concat(jsonPath));
         console.error("\uD83D\uDEAB Use this JSON Schema: ".concat(schema));
         throw new Error();
     }
-    var json = (_a = master.modes.default) !== null && _a !== void 0 ? _a : {};
-    var modeJson = master.modes[mode];
-    if (modeJson) {
-        applyJson_1(master, json, modeJson);
-    }
-    else {
-        console.error("\uD83D\uDEAB unknown mode: ".concat(JSON.stringify(mode), " in ").concat(JSON.stringify(Object.keys(master))));
-        throw new Error();
-    }
-    build(json);
+    build_1(mode);
     console.log("\u2705 ".concat(jsonPath, " ").concat(mode, " build end: ").concat(new Date(), " ( ").concat((getBuildTime() / 1000).toLocaleString(), "s )"));
 }
 catch (error) {

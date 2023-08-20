@@ -98,44 +98,57 @@ const isBuildBinaryPathValue = isValidBuildPathValue;
 const isBuildJsonValue = isValidBuildJsonValue;
 const isBuildCallValue = isValidBuildCallValue;
 const isBuildResourceValue = isValidBuildResourceValue;
-interface BuildTarget extends JsonableObject
+interface BuildPrimeTarget extends JsonableObject
 {
     template: BuildValueType;
     output: BuildPathValue;
     parameters?: { [key: string]: BuildValueType; } | BuildJsonValue;
 }
+interface BuildProcessTarget extends JsonableObject
+{
+    processes: string | string[];
+}
+interface BuildReferenceTarget extends JsonableObject
+{
+    references: string;
+}
+type BuildTarget = BuildPrimeTarget | BuildProcessTarget | BuildReferenceTarget;
 interface BuildModeBase extends JsonableObject
 {
     base?: string;
-    preprocesses?: string[];
     parameters?: { [key: string]: BuildValueType; } | BuildJsonValue;
 }
-interface SingleBuildMode extends BuildModeBase
-{
-    template: BuildValueType;
-    output: BuildPathValue;
-}
+interface SingleBuildMode extends BuildModeBase, BuildPrimeTarget { }
 interface MultiBuildMode extends BuildModeBase
 {
-    files: BuildTarget[];
+    steps: BuildTarget[];
 }
 type BuildMode = SingleBuildMode | MultiBuildMode;
-const isSingleBuildMode = (mode: BuildMode): mode is SingleBuildMode => undefined === mode.files;
-//const isMultiBuildMode = (mode: BuildMode): mode is MultiBuildMode => undefined !== mode.files;
+const isSingleBuildMode = (mode: BuildMode): mode is SingleBuildMode => undefined === mode.steps;
+//const isMultiBuildMode = (mode: BuildMode): mode is MultiBuildMode => undefined !== mode.steps;
+const isValidPrimeBuildTarget = (target: any): target is BuildPrimeTarget =>
+    null !== target &&
+    "object" === typeof target &&
+    "template" in target && isValidBuildValue(target.template) &&
+    "output" in target && isValidBuildPathValue(target.output) &&
+    ! ("parameters" in target && ( ! isValidObject(target.parameters, isValidBuildValue) && ! isValidBuildJsonValue(target.parameters)));
+const isValidProcessBuildTarget = (target: any): target is BuildProcessTarget =>
+    null !== target &&
+    "object" === typeof target &&
+    "processes" in target && (isValidString(target.processes) || isValidArray(target.processes, isValidString));
+const isValidReferenceBuildTarget = (target: any): target is BuildReferenceTarget =>
+    null !== target &&
+    "object" === typeof target &&
+    "references" in target && isValidString(target.references);
 const isValidBuildTarget = (target: any): target is BuildTarget =>
-        null !== target &&
-        "object" === typeof target &&
-        "template" in target && isValidBuildValue(target.template) &&
-        "output" in target && isValidBuildPathValue(target.output) &&
-        ! ("parameters" in target && ( ! isValidObject(target.parameters, isValidBuildValue) && ! isValidBuildJsonValue(target.parameters)));
+    isValidPrimeBuildTarget(target) || isValidProcessBuildTarget(target) || isValidReferenceBuildTarget(target);
 const isValidBuildMode = (mode: any): mode is BuildMode =>
     null !== mode &&
     "object" === typeof mode &&
     ! ("base" in mode && ! isValidString(mode.base)) &&
     ! ("template" in mode && ! isValidBuildValue(mode.template)) &&
     ! ("output" in mode && ! isValidBuildPathValue(mode.output)) &&
-    ! ("files" in mode && ! (isValidArray(mode.files, isValidBuildTarget) && ! ("template" in mode) && ! ("output" in mode))) &&
-    ! ("preprocesses" in mode && ! isValidArray(mode.preprocesses, isValidString)) &&
+    ! ("steps" in mode && ! (isValidArray(mode.steps, isValidBuildTarget) && ! ("template" in mode) && ! ("output" in mode))) &&
     ! ("parameters" in mode && ( ! isValidObject(mode.parameters, isValidBuildValue) && ! isValidBuildJsonValue(mode.parameters)));
 type BuildJson =
 {
@@ -331,41 +344,67 @@ try
             )
         );
     }
-    const build = (json: BuildMode) =>
+    const buildTrget = (target: BuildTarget, parameters: { [key: string]: BuildValueType, }) =>
     {
-        (json?.preprocesses || [ ]).forEach
-        (
-            command =>
-            {
-                console.log(`👉 ${command}`);
-                child_process.execSync
+        if (isValidPrimeBuildTarget(target))
+        {
+            buildFile
+            (
+                target.template,
+                target.output,
+                applyJsonObject
                 (
-                    command,
-                    {
-                        stdio: [ "inherit", "inherit", "inherit" ]
-                    }
-                );
-            }
-        );
+                    simpleDeepCopy(parameters),
+                    evalParamets(target.parameters ?? { })
+                )
+            );
+        }
+        else
+        if (isValidProcessBuildTarget(target))
+        {
+            (Array.isArray(target.processes) ? target.processes: [ target.processes, ]).forEach
+            (
+                command =>
+                {
+                    console.log(`👉 ${command}`);
+                    child_process.execSync
+                    (
+                        command,
+                        {
+                            stdio: [ "inherit", "inherit", "inherit" ]
+                        }
+                    );
+                }
+            );
+        }
+        else
+        if (isValidReferenceBuildTarget(target))
+        {
+            (Array.isArray(target.references) ? target.references: [ target.references, ])
+                .forEach(reference => build(reference));
+        }
+    };
+    const build = (mode: string) =>
+    {
+        const json: BuildMode = simpleDeepCopy(master.modes.default ?? { });
+        const modeJson = master.modes[mode];
+        if (modeJson)
+        {
+            applyJson(master, json, modeJson);
+        }
+        else
+        {
+            console.error(`🚫 unknown mode: ${JSON.stringify(mode)} in ${JSON.stringify(Object.keys(master))}`);
+            throw new Error();
+        }
         if (isSingleBuildMode(json))
         {
             buildFile(json.template, json.output, evalParamets(json.parameters ?? { }));
         }
         else
         {
-            json.files.forEach
-            (
-                i => buildFile
-                (
-                    i.template,
-                    i.output,
-                    applyJsonObject
-                    (
-                        simpleDeepCopy(evalParamets(json.parameters ?? { })),
-                        evalParamets(i.parameters ?? { })
-                    )
-                )
-            );
+            const parameters = evalParamets(json.parameters ?? { });
+            json.steps.forEach(i => buildTrget(i, parameters));
         }
     };
     const basePath = jsonPath.replace(/\/[^\/]+$/, "/");
@@ -376,18 +415,7 @@ try
         console.error(`🚫 Use this JSON Schema: ${schema}`);
         throw new Error();
     }
-    const json = master.modes.default ?? { };
-    const modeJson = master.modes[mode];
-    if (modeJson)
-    {
-        applyJson(master, json, modeJson);
-    }
-    else
-    {
-        console.error(`🚫 unknown mode: ${JSON.stringify(mode)} in ${JSON.stringify(Object.keys(master))}`);
-        throw new Error();
-    }
-    build(json);
+    build(mode);
     console.log(`✅ ${jsonPath} ${mode} build end: ${new Date()} ( ${(getBuildTime() / 1000).toLocaleString()}s )`);
 }
 catch(error)

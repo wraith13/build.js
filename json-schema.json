@@ -133,7 +133,7 @@
                 }
             ]
         },
-        "BuildTarget": {
+        "BuildPrimeTarget": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -150,7 +150,7 @@
                             "additionalProperties": {
                                 "$ref": "#/definitions/Value"
                             },
-                            "[not]":
+                            "not":
                             {
                                 "required": [ "json"]
                             }
@@ -166,6 +166,53 @@
                 "output"
             ]
         },
+        "BuildProcessTarget": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "processes": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "processes"
+            ]
+        },
+        "BuildReferenceTarget": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "references": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "references"
+            ]
+        },
+        "BuildTarget": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/BuildPrimeTarget"
+                },
+                {
+                    "$ref": "#/definitions/BuildProcessTarget"
+                },
+                {
+                    "$ref": "#/definitions/BuildReferenceTarget"
+                }
+            ]
+        },
         "SingleMode": {
             "type": "object",
             "additionalProperties": false,
@@ -179,13 +226,6 @@
                 "output": {
                     "$ref": "#/definitions/PathValue"
                 },
-                "preprocesses": {
-                    "type": "array",
-                    "items":
-                    {
-                        "type": "string"
-                    }
-                },
                 "parameters": {
                     "oneOf": [
                         {
@@ -193,7 +233,7 @@
                             "additionalProperties": {
                                 "$ref": "#/definitions/Value"
                             },
-                            "[not]":
+                            "not":
                             {
                                 "required": [ "json"]
                             }
@@ -214,18 +254,11 @@
                 "base": {
                     "type": "string"
                 },
-                "files": {
+                "steps": {
                     "type": "array",
                     "items":
                     {
                         "$ref": "#/definitions/BuildTarget"
-                    }
-                },
-                "preprocesses": {
-                    "type": "array",
-                    "items":
-                    {
-                        "type": "string"
                     }
                 },
                 "parameters": {
@@ -235,7 +268,7 @@
                             "additionalProperties": {
                                 "$ref": "#/definitions/Value"
                             },
-                            "[not]":
+                            "not":
                             {
                                 "required": [ "json"]
                             }
@@ -247,7 +280,7 @@
                 }
             },
             "required": [
-                "files"
+                "steps"
             ]
         },
         "Mode": {
