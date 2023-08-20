@@ -257,7 +257,7 @@ try {
         }
     };
     var build_1 = function (mode) {
-        var _a, _b, _c;
+        var _a, _b;
         var json = simpleDeepCopy((_a = master_1.modes.default) !== null && _a !== void 0 ? _a : {});
         var modeJson = master_1.modes[mode];
         if (modeJson) {
@@ -267,12 +267,12 @@ try {
             console.error("\uD83D\uDEAB unknown mode: ".concat(JSON.stringify(mode), " in ").concat(JSON.stringify(Object.keys(master_1))));
             throw new Error();
         }
+        var parameters = evalParamets_1((_b = json.parameters) !== null && _b !== void 0 ? _b : {});
         if (isSingleBuildMode(json)) {
-            buildFile_1(json.template, json.output, evalParamets_1((_b = json.parameters) !== null && _b !== void 0 ? _b : {}));
+            buildTrget_1(json, parameters);
         }
         else {
-            var parameters_1 = evalParamets_1((_c = json.parameters) !== null && _c !== void 0 ? _c : {});
-            json.steps.forEach(function (i) { return buildTrget_1(i, parameters_1); });
+            json.steps.forEach(function (i) { return buildTrget_1(i, parameters); });
         }
     };
     var basePath_1 = jsonPath.replace(/\/[^\/]+$/, "/");

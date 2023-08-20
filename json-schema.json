@@ -213,7 +213,7 @@
                 }
             ]
         },
-        "SingleMode": {
+        "SinglePrimeMode": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -245,6 +245,19 @@
                 }
             },
             "required": [
+            ]
+        },
+        "SingleMode": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/SinglePrimeMode"
+                },
+                {
+                    "$ref": "#/definitions/BuildProcessTarget"
+                },
+                {
+                    "$ref": "#/definitions/BuildReferenceTarget"
+                }
             ]
         },
         "MultiMode": {

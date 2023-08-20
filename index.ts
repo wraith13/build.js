@@ -118,11 +118,12 @@ interface BuildModeBase extends JsonableObject
     base?: string;
     parameters?: { [key: string]: BuildValueType; } | BuildJsonValue;
 }
-interface SingleBuildMode extends BuildModeBase, BuildPrimeTarget { }
+interface SinglePrimeBuildMode extends BuildModeBase, BuildPrimeTarget { }
 interface MultiBuildMode extends BuildModeBase
 {
     steps: BuildTarget[];
 }
+type SingleBuildMode = SinglePrimeBuildMode | BuildProcessTarget | BuildReferenceTarget;
 type BuildMode = SingleBuildMode | MultiBuildMode;
 const isSingleBuildMode = (mode: BuildMode): mode is SingleBuildMode => undefined === mode.steps;
 //const isMultiBuildMode = (mode: BuildMode): mode is MultiBuildMode => undefined !== mode.steps;
@@ -290,7 +291,7 @@ try
     };
     const applyJson = (master: BuildJson, target: BuildMode, source: BuildMode) =>
     {
-        const base = source.base;
+        const base = (source as BuildModeBase).base;
         if (base)
         {
             const baseJson = master.modes[base];
@@ -397,13 +398,13 @@ try
             console.error(`🚫 unknown mode: ${JSON.stringify(mode)} in ${JSON.stringify(Object.keys(master))}`);
             throw new Error();
         }
+        const parameters = evalParamets((json as BuildModeBase).parameters ?? { });
         if (isSingleBuildMode(json))
         {
-            buildFile(json.template, json.output, evalParamets(json.parameters ?? { }));
+            buildTrget(json, parameters);
         }
         else
         {
-            const parameters = evalParamets(json.parameters ?? { });
             json.steps.forEach(i => buildTrget(i, parameters));
         }
     };
