@@ -56,18 +56,18 @@ const isValidBuildPathValue = (obj: any): obj is BuildPathValue =>
 interface BuildJsonValue extends JsonableObject
 {
     json: string;
-    key?: string | string[];
+    value?: string | string[];
 }
 const isValidBuildJsonValue = (obj: any): obj is BuildJsonValue =>
     "object" === typeof obj &&
     "json" in obj && isValidString(obj.json) &&
     !
     (
-        "key" in obj &&
+        "value" in obj &&
         !
         (
-            isValidString(obj.key) ||
-            isValidArray(obj.key, isValidString)
+            isValidString(obj.value) ||
+            isValidArray(obj.value, isValidString)
         )
     );
 interface BuildCallValue extends JsonableObject
@@ -186,21 +186,20 @@ try
     const fget = (path: string) => fs.readFileSync(path, { encoding: "utf-8" });
     const evalJsonValue = (value: BuildJsonValue) =>
     {
-        let result = fget(value.json);
-        if (undefined !== value.key)
+        let current = JSON.parse(fget(value.json));
+        if (undefined !== value.value)
         {
-            let current = JSON.parse(result);
-            if (Array.isArray(value.key))
+            if (Array.isArray(value.value))
             {
-                value.key.forEach(k => current = current[k]);
-                result = current;
+                value.value.forEach(k => current = current[k]);
+                current = current;
             }
             else
             {
-                result = current[value.key];
+                current = current[value.value];
             }
         }
-        return result;
+        return current;
     };
     const evalValue = (basePath: string, value: BuildValueType) =>
     {

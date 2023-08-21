@@ -38,9 +38,9 @@ var isValidBuildPathValue = function (obj) {
 var isValidBuildJsonValue = function (obj) {
     return "object" === typeof obj &&
         "json" in obj && isValidString(obj.json) &&
-        !("key" in obj &&
-            !(isValidString(obj.key) ||
-                isValidArray(obj.key, isValidString)));
+        !("value" in obj &&
+            !(isValidString(obj.value) ||
+                isValidArray(obj.value, isValidString)));
 };
 var isValidBuildCallValue = function (obj) {
     return "object" === typeof obj &&
@@ -126,18 +126,17 @@ try {
     };
     var fget_1 = function (path) { return fs_1.readFileSync(path, { encoding: "utf-8" }); };
     var evalJsonValue_1 = function (value) {
-        var result = fget_1(value.json);
-        if (undefined !== value.key) {
-            var current_1 = JSON.parse(result);
-            if (Array.isArray(value.key)) {
-                value.key.forEach(function (k) { return current_1 = current_1[k]; });
-                result = current_1;
+        var current = JSON.parse(fget_1(value.json));
+        if (undefined !== value.value) {
+            if (Array.isArray(value.value)) {
+                value.value.forEach(function (k) { return current = current[k]; });
+                current = current;
             }
             else {
-                result = current_1[value.key];
+                current = current[value.value];
             }
         }
-        return result;
+        return current;
     };
     var evalValue_1 = function (basePath, value) {
         if ("string" === typeof value) {

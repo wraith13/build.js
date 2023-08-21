@@ -63,7 +63,7 @@
                 "json": {
                     "type": "string"
                 },
-                "key": {
+                "value": {
                     "oneOf": [
                         {
                             "type": "string"
