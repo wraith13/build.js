@@ -294,6 +294,9 @@
                 },
                 {
                     "$ref": "#/definitions/BuildReferenceTarget"
+                },
+                {
+                    "$ref": "#/definitions/BuildMetaTarget"
                 }
             ]
         },
