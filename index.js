@@ -66,43 +66,61 @@ var isBuildResourceValue = isValidBuildResourceValue;
 var isValidPrimeBuildParameters = function (obj) {
     return isValidObject(obj, isValidBuildValue);
 };
-var isSingleBuildMode = function (mode) { return undefined === mode.steps; };
-//const isMultiBuildMode = (mode: BuildMode): mode is MultiBuildMode => undefined !== mode.steps;
-var isValidPrimeBuildTarget = function (target) {
-    return null !== target &&
-        "object" === typeof target &&
-        "template" in target && isValidBuildValue(target.template) &&
-        "output" in target && isValidBuildPathValue(target.output) &&
-        !("parameters" in target && (!isValidPrimeBuildParameters(target.parameters) && !isValidBuildJsonValue(target.parameters)));
+var isValidBuildPrimeTarget = function (mode) {
+    return null !== mode &&
+        "object" === typeof mode &&
+        !("template" in mode && !isValidBuildValue(mode.template)) &&
+        !("output" in mode && !isValidBuildPathValue(mode.output)) &&
+        !("parameters" in mode && (!isValidPrimeBuildParameters(mode.parameters) && !isValidBuildJsonValue(mode.parameters)));
 };
-var isValidProcessBuildTarget = function (target) {
-    return null !== target &&
-        "object" === typeof target &&
-        "processes" in target && (isValidString(target.processes) || isValidArray(target.processes, isValidString));
+var isValidBuildProcessTarget = function (mode) {
+    return null !== mode &&
+        "object" === typeof mode &&
+        "processes" in mode && (isValidString(mode.process) || isValidArray(mode.process, isValidString));
 };
-var isValidReferenceBuildTarget = function (target) {
-    return null !== target &&
-        "object" === typeof target &&
-        "references" in target && isValidString(target.references);
+var isValidBuildReferenceTarget = function (mode) {
+    return null !== mode &&
+        "object" === typeof mode &&
+        "references" in mode && isValidString(mode.references);
 };
-var isValidMetaBuildTarget = function (target) {
-    return null !== target &&
-        "object" === typeof target &&
-        "meta" in target && isValidBuildTarget(target.meta) &&
-        "parameters" in target && (isValidArray(target.parameters, isValidPrimeBuildParameters) || isValidBuildJsonValue(target.parameters));
+var isValidBuildMetaTarget = function (mode) {
+    return null !== mode &&
+        "object" === typeof mode &&
+        "meta" in mode && !isValidBuildTarget(mode.meta) &&
+        "parameters" in mode && (isValidArray(mode.parameters, isValidPrimeBuildParameters) || isValidBuildJsonValue(mode.parameters));
 };
-var isValidBuildTarget = function (target) {
-    return isValidPrimeBuildTarget(target) || isValidProcessBuildTarget(target) || isValidReferenceBuildTarget(target) || isValidMetaBuildTarget(target);
+var isValidBuildTarget = function (mode) {
+    return isValidBuildPrimeTarget(mode) ||
+        isValidBuildProcessTarget(mode) ||
+        isValidBuildReferenceTarget(mode) ||
+        isValidBuildMetaTarget(mode);
 };
-var isValidBuildMode = function (mode) {
+var isValidBuildModeBase = function (mode) {
     return null !== mode &&
         "object" === typeof mode &&
         !("base" in mode && !isValidString(mode.base)) &&
-        !("template" in mode && !isValidBuildValue(mode.template)) &&
-        !("output" in mode && !isValidBuildPathValue(mode.output)) &&
-        !("steps" in mode && !(isValidArray(mode.steps, isValidBuildTarget) && !("template" in mode) && !("output" in mode))) &&
         !("parameters" in mode && (!isValidPrimeBuildParameters(mode.parameters) && !isValidBuildJsonValue(mode.parameters)));
 };
+var isValidSinglePrimeBuildMode = function (mode) {
+    return isValidBuildModeBase(mode) &&
+        isValidBuildPrimeTarget(mode);
+};
+var isValidMultiBuildMode = function (mode) {
+    return null !== mode &&
+        "object" === typeof mode &&
+        "steps" in mode && isValidArray(mode.steps, isValidBuildTarget);
+};
+var isValidSingleBuildMode = function (mode) {
+    return isValidSinglePrimeBuildMode(mode) ||
+        isValidBuildProcessTarget(mode) ||
+        isValidBuildReferenceTarget(mode) ||
+        isValidBuildMetaTarget(mode);
+};
+var isValidBuildMode = function (mode) {
+    return isValidSingleBuildMode(mode) ||
+        isValidMultiBuildMode(mode);
+};
+var isSingleBuildMode = function (mode) { return undefined === mode.steps; };
 var isValidBuildJson = function (json) {
     return "object" === typeof json &&
         "$schema" in json && "string" === typeof json.$schema && // schema === json.$schema &&
@@ -251,10 +269,10 @@ try {
     };
     var buildTrget_1 = function (target, parameters) {
         var _a;
-        if (isValidPrimeBuildTarget(target)) {
+        if (isValidBuildPrimeTarget(target)) {
             buildFile_1(target.template, target.output, applyJsonObject_1(simpleDeepCopy(parameters), evalParameters_1((_a = target.parameters) !== null && _a !== void 0 ? _a : {})));
         }
-        else if (isValidProcessBuildTarget(target)) {
+        else if (isValidBuildProcessTarget(target)) {
             (Array.isArray(target.processes) ? target.processes : [target.processes,]).forEach(function (command) {
                 console.log("\uD83D\uDC49 ".concat(command));
                 child_process_1.execSync(command, {
@@ -262,12 +280,14 @@ try {
                 });
             });
         }
-        else if (isValidReferenceBuildTarget(target)) {
+        else if (isValidBuildReferenceTarget(target)) {
             (Array.isArray(target.references) ? target.references : [target.references,])
                 .forEach(function (reference) { return build_1(reference); });
         }
-        else if (isValidMetaBuildTarget(target)) {
-            var parameters_1 = evalParameters_1(target.parameters);
+        else if (isValidBuildMetaTarget(target)) {
+            var parameters_1 = isValidBuildJsonValue(target.parameters) ?
+                evalJsonValue_1(target.parameters) :
+                target.parameters;
             if (isValidArray(parameters_1, isValidPrimeBuildParameters)) {
                 parameters_1.forEach(function (p) { return build_1(JSON.parse(applyParameters_1(JSON.stringify(target.meta), p))); });
             }

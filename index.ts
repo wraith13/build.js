@@ -106,63 +106,78 @@ interface BuildPrimeTarget extends JsonableObject
     output: BuildPathValue;
     parameters?: { [key: string]: BuildValueType; } | BuildJsonValue;
 }
+const isValidBuildPrimeTarget = (mode: any): mode is BuildPrimeTarget =>
+    null !== mode &&
+    "object" === typeof mode &&
+    ! ("template" in mode && ! isValidBuildValue(mode.template)) &&
+    ! ("output" in mode && ! isValidBuildPathValue(mode.output)) &&
+    ! ("parameters" in mode && ( ! isValidPrimeBuildParameters(mode.parameters) && ! isValidBuildJsonValue(mode.parameters)));
 interface BuildProcessTarget extends JsonableObject
 {
     processes: string | string[];
 }
+const isValidBuildProcessTarget = (mode: any): mode is BuildProcessTarget =>
+    null !== mode &&
+    "object" === typeof mode &&
+    "processes" in mode && (isValidString(mode.process) || isValidArray(mode.process, isValidString));
 interface BuildReferenceTarget extends JsonableObject
 {
     references: string;
 }
+const isValidBuildReferenceTarget = (mode: any): mode is BuildReferenceTarget =>
+    null !== mode &&
+    "object" === typeof mode &&
+    "references" in mode && isValidString(mode.references);
 interface BuildMetaTarget extends JsonableObject
 {
     meta: BuildTarget;
-    parameters: { [key: string]: BuildValueType; } | BuildJsonValue;
+    parameters: { [key: string]: BuildValueType; }[] | BuildJsonValue;
 }
+const isValidBuildMetaTarget = (mode: any): mode is BuildMetaTarget =>
+    null !== mode &&
+    "object" === typeof mode &&
+    "meta" in mode && ! isValidBuildTarget(mode.meta) &&
+    "parameters" in mode && (isValidArray(mode.parameters, isValidPrimeBuildParameters) || isValidBuildJsonValue(mode.parameters));
 type BuildTarget = BuildPrimeTarget | BuildProcessTarget | BuildReferenceTarget | BuildMetaTarget;
+const isValidBuildTarget = (mode: any): mode is BuildTarget =>
+    isValidBuildPrimeTarget(mode) ||
+    isValidBuildProcessTarget(mode) ||
+    isValidBuildReferenceTarget(mode) ||
+    isValidBuildMetaTarget(mode);
 interface BuildModeBase extends JsonableObject
 {
     base?: string;
     parameters?: { [key: string]: BuildValueType; } | BuildJsonValue;
 }
+const isValidBuildModeBase = (mode: any): mode is BuildModeBase =>
+    null !== mode &&
+    "object" === typeof mode &&
+    ! ("base" in mode && ! isValidString(mode.base)) &&
+    ! ("parameters" in mode && ( ! isValidPrimeBuildParameters(mode.parameters) && ! isValidBuildJsonValue(mode.parameters)));
 interface SinglePrimeBuildMode extends BuildModeBase, BuildPrimeTarget { }
+const isValidSinglePrimeBuildMode = (mode: any): mode is SinglePrimeBuildMode =>
+    isValidBuildModeBase(mode) &&
+    isValidBuildPrimeTarget(mode);
 interface MultiBuildMode extends BuildModeBase
 {
     steps: BuildTarget[];
 }
-type SingleBuildMode = SinglePrimeBuildMode | BuildProcessTarget | BuildReferenceTarget;
-type BuildMode = SingleBuildMode | MultiBuildMode;
-const isSingleBuildMode = (mode: BuildMode): mode is SingleBuildMode => undefined === mode.steps;
-//const isMultiBuildMode = (mode: BuildMode): mode is MultiBuildMode => undefined !== mode.steps;
-const isValidPrimeBuildTarget = (target: any): target is BuildPrimeTarget =>
-    null !== target &&
-    "object" === typeof target &&
-    "template" in target && isValidBuildValue(target.template) &&
-    "output" in target && isValidBuildPathValue(target.output) &&
-    ! ("parameters" in target && ( ! isValidPrimeBuildParameters(target.parameters) && ! isValidBuildJsonValue(target.parameters)));
-const isValidProcessBuildTarget = (target: any): target is BuildProcessTarget =>
-    null !== target &&
-    "object" === typeof target &&
-    "processes" in target && (isValidString(target.processes) || isValidArray(target.processes, isValidString));
-const isValidReferenceBuildTarget = (target: any): target is BuildReferenceTarget =>
-    null !== target &&
-    "object" === typeof target &&
-    "references" in target && isValidString(target.references);
-const isValidMetaBuildTarget = (target: any): target is BuildMetaTarget =>
-    null !== target &&
-    "object" === typeof target &&
-    "meta" in target && isValidBuildTarget(target.meta) &&
-    "parameters" in target && (isValidArray(target.parameters, isValidPrimeBuildParameters) || isValidBuildJsonValue(target.parameters));
-const isValidBuildTarget = (target: any): target is BuildTarget =>
-    isValidPrimeBuildTarget(target) || isValidProcessBuildTarget(target) || isValidReferenceBuildTarget(target) || isValidMetaBuildTarget(target);
-const isValidBuildMode = (mode: any): mode is BuildMode =>
+const isValidMultiBuildMode = (mode: any): mode is MultiBuildMode =>
     null !== mode &&
     "object" === typeof mode &&
-    ! ("base" in mode && ! isValidString(mode.base)) &&
-    ! ("template" in mode && ! isValidBuildValue(mode.template)) &&
-    ! ("output" in mode && ! isValidBuildPathValue(mode.output)) &&
-    ! ("steps" in mode && ! (isValidArray(mode.steps, isValidBuildTarget) && ! ("template" in mode) && ! ("output" in mode))) &&
-    ! ("parameters" in mode && ( ! isValidPrimeBuildParameters(mode.parameters) && ! isValidBuildJsonValue(mode.parameters)));
+    "steps" in mode && isValidArray(mode.steps, isValidBuildTarget);
+type SingleBuildMode = SinglePrimeBuildMode | BuildProcessTarget | BuildReferenceTarget | BuildMetaTarget;
+const isValidSingleBuildMode = (mode: any): mode is SingleBuildMode =>
+    isValidSinglePrimeBuildMode(mode) ||
+    isValidBuildProcessTarget(mode) ||
+    isValidBuildReferenceTarget(mode) ||
+    isValidBuildMetaTarget(mode);
+type BuildMode = SingleBuildMode | MultiBuildMode;
+const isValidBuildMode = (mode: any): mode is BuildMode =>
+    isValidSingleBuildMode(mode) ||
+    isValidMultiBuildMode(mode);
+const isSingleBuildMode = (mode: BuildMode): mode is SingleBuildMode => undefined === mode.steps;
+//const isMultiBuildMode = (mode: BuildMode): mode is MultiBuildMode => undefined !== mode.steps;
 type BuildJson =
 {
     $schema: string; // typeof schema,
@@ -360,7 +375,7 @@ try
     }
     const buildTrget = (target: BuildTarget, parameters: { [key: string]: BuildValueType, }) =>
     {
-        if (isValidPrimeBuildTarget(target))
+        if (isValidBuildPrimeTarget(target))
         {
             buildFile
             (
@@ -374,7 +389,7 @@ try
             );
         }
         else
-        if (isValidProcessBuildTarget(target))
+        if (isValidBuildProcessTarget(target))
         {
             (Array.isArray(target.processes) ? target.processes: [ target.processes, ]).forEach
             (
@@ -392,15 +407,17 @@ try
             );
         }
         else
-        if (isValidReferenceBuildTarget(target))
+        if (isValidBuildReferenceTarget(target))
         {
             (Array.isArray(target.references) ? target.references: [ target.references, ])
                 .forEach(reference => build(reference));
         }
         else
-        if (isValidMetaBuildTarget(target))
+        if (isValidBuildMetaTarget(target))
         {
-            const parameters = evalParameters(target.parameters);
+            const parameters = isValidBuildJsonValue(target.parameters) ?
+                evalJsonValue(target.parameters):
+                target.parameters;
             if (isValidArray(parameters, isValidPrimeBuildParameters))
             {
                 parameters.forEach(p => build(JSON.parse(applyParameters(JSON.stringify(target.meta), p))));
