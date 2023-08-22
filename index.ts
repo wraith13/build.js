@@ -112,6 +112,10 @@ const isValidBuildPrimeTarget = (mode: any): mode is BuildPrimeTarget =>
     ! ("template" in mode && ! isValidBuildValue(mode.template)) &&
     ! ("output" in mode && ! isValidBuildPathValue(mode.output)) &&
     ! ("parameters" in mode && ( ! isValidPrimeBuildParameters(mode.parameters) && ! isValidBuildJsonValue(mode.parameters)));
+const isBuildPrimeTarget = (mode: any): mode is BuildPrimeTarget =>
+    isValidBuildPrimeTarget(mode) &&
+    "template" in mode &&
+    "output" in mode;
 interface BuildProcessTarget extends JsonableObject
 {
     processes: string | string[];
@@ -119,7 +123,7 @@ interface BuildProcessTarget extends JsonableObject
 const isValidBuildProcessTarget = (mode: any): mode is BuildProcessTarget =>
     null !== mode &&
     "object" === typeof mode &&
-    "processes" in mode && (isValidString(mode.process) || isValidArray(mode.process, isValidString));
+    "processes" in mode && (isValidString(mode.processes) || isValidArray(mode.processes, isValidString));
 interface BuildReferenceTarget extends JsonableObject
 {
     references: string;
@@ -136,7 +140,7 @@ interface BuildMetaTarget extends JsonableObject
 const isValidBuildMetaTarget = (mode: any): mode is BuildMetaTarget =>
     null !== mode &&
     "object" === typeof mode &&
-    "meta" in mode && ! isValidBuildTarget(mode.meta) &&
+    "meta" in mode && isValidBuildTarget(mode.meta) &&
     "parameters" in mode && (isValidArray(mode.parameters, isValidPrimeBuildParameters) || isValidBuildJsonValue(mode.parameters));
 type BuildTarget = BuildPrimeTarget | BuildProcessTarget | BuildReferenceTarget | BuildMetaTarget;
 const isValidBuildTarget = (mode: any): mode is BuildTarget =>
@@ -375,7 +379,7 @@ try
     }
     const buildTrget = (target: BuildTarget, parameters: { [key: string]: BuildValueType, }) =>
     {
-        if (isValidBuildPrimeTarget(target))
+        if (isBuildPrimeTarget(target))
         {
             buildFile
             (

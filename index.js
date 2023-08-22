@@ -73,10 +73,15 @@ var isValidBuildPrimeTarget = function (mode) {
         !("output" in mode && !isValidBuildPathValue(mode.output)) &&
         !("parameters" in mode && (!isValidPrimeBuildParameters(mode.parameters) && !isValidBuildJsonValue(mode.parameters)));
 };
+var isBuildPrimeTarget = function (mode) {
+    return isValidBuildPrimeTarget(mode) &&
+        "template" in mode &&
+        "output" in mode;
+};
 var isValidBuildProcessTarget = function (mode) {
     return null !== mode &&
         "object" === typeof mode &&
-        "processes" in mode && (isValidString(mode.process) || isValidArray(mode.process, isValidString));
+        "processes" in mode && (isValidString(mode.processes) || isValidArray(mode.processes, isValidString));
 };
 var isValidBuildReferenceTarget = function (mode) {
     return null !== mode &&
@@ -86,7 +91,7 @@ var isValidBuildReferenceTarget = function (mode) {
 var isValidBuildMetaTarget = function (mode) {
     return null !== mode &&
         "object" === typeof mode &&
-        "meta" in mode && !isValidBuildTarget(mode.meta) &&
+        "meta" in mode && isValidBuildTarget(mode.meta) &&
         "parameters" in mode && (isValidArray(mode.parameters, isValidPrimeBuildParameters) || isValidBuildJsonValue(mode.parameters));
 };
 var isValidBuildTarget = function (mode) {
@@ -269,7 +274,7 @@ try {
     };
     var buildTrget_1 = function (target, parameters) {
         var _a;
-        if (isValidBuildPrimeTarget(target)) {
+        if (isBuildPrimeTarget(target)) {
             buildFile_1(target.template, target.output, applyJsonObject_1(simpleDeepCopy(parameters), evalParameters_1((_a = target.parameters) !== null && _a !== void 0 ? _a : {})));
         }
         else if (isValidBuildProcessTarget(target)) {
