@@ -424,7 +424,22 @@ try
                 target.parameters;
             if (isValidArray(parameters, isValidPrimeBuildParameters))
             {
-                parameters.forEach(p => build(JSON.parse(applyParameters(JSON.stringify(target.meta), p))));
+                parameters.forEach
+                (
+                    p =>
+                    {
+                        const json = JSON.parse(applyParameters(JSON.stringify(target.meta), p));
+                        if (isValidBuildTarget(json))
+                        {
+                            const parameters = evalParameters((json as BuildModeBase).parameters ?? { });
+                            buildTrget(json, parameters);
+                        }
+                        else
+                        {
+                            console.error(`🚫 unknown build target(meta): ${JSON.stringify(json)}`);
+                        }
+                    }
+                );
             }
             else
             {

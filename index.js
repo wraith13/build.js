@@ -294,7 +294,17 @@ try {
                 evalJsonValue_1(target.parameters) :
                 target.parameters;
             if (isValidArray(parameters_1, isValidPrimeBuildParameters)) {
-                parameters_1.forEach(function (p) { return build_1(JSON.parse(applyParameters_1(JSON.stringify(target.meta), p))); });
+                parameters_1.forEach(function (p) {
+                    var _a;
+                    var json = JSON.parse(applyParameters_1(JSON.stringify(target.meta), p));
+                    if (isValidBuildTarget(json)) {
+                        var parameters_2 = evalParameters_1((_a = json.parameters) !== null && _a !== void 0 ? _a : {});
+                        buildTrget_1(json, parameters_2);
+                    }
+                    else {
+                        console.error("\uD83D\uDEAB unknown build target(meta): ".concat(JSON.stringify(json)));
+                    }
+                });
             }
             else {
                 console.error("\uD83D\uDEAB invalid meta build parameters: ".concat(JSON.stringify(target)));
