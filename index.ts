@@ -431,7 +431,14 @@ try
                         const json = JSON.parse(applyParameters(JSON.stringify(target.meta), p));
                         if (isValidBuildTarget(json))
                         {
-                            const parameters = evalParameters((json as BuildModeBase).parameters ?? { });
+                            const parameters = evalParameters
+                            (
+                                applyJsonObject
+                                (
+                                    simpleDeepCopy(master.modes.default?.parameters ?? { }),
+                                    (json as BuildModeBase).parameters ?? { }
+                                )
+                            );
                             buildTrget(json, parameters);
                         }
                         else

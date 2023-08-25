@@ -295,10 +295,10 @@ try {
                 target.parameters;
             if (isValidArray(parameters_1, isValidPrimeBuildParameters)) {
                 parameters_1.forEach(function (p) {
-                    var _a;
+                    var _a, _b, _c;
                     var json = JSON.parse(applyParameters_1(JSON.stringify(target.meta), p));
                     if (isValidBuildTarget(json)) {
-                        var parameters_2 = evalParameters_1((_a = json.parameters) !== null && _a !== void 0 ? _a : {});
+                        var parameters_2 = evalParameters_1(applyJsonObject_1(simpleDeepCopy((_b = (_a = master_1.modes.default) === null || _a === void 0 ? void 0 : _a.parameters) !== null && _b !== void 0 ? _b : {}), (_c = json.parameters) !== null && _c !== void 0 ? _c : {}));
                         buildTrget_1(json, parameters_2);
                     }
                     else {
