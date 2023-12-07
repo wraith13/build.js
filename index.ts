@@ -211,14 +211,23 @@ try
             if (Array.isArray(value.value))
             {
                 value.value.forEach(k => current = current[k]);
-                current = current;
             }
             else
             {
                 current = current[value.value];
             }
         }
-        return current;
+        if ("string" === typeof current)
+        {
+            return current;
+        }
+        else
+        {
+            let base = simpleDeepCopy(value) as JsonableObject;
+            delete base.json;
+            delete base.value;
+            return applyJsonObject(base, current);
+        }
     };
     const evalValue = (basePath: string, value: BuildValueType) =>
     {

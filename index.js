@@ -153,13 +153,20 @@ try {
         if (undefined !== value.value) {
             if (Array.isArray(value.value)) {
                 value.value.forEach(function (k) { return current = current[k]; });
-                current = current;
             }
             else {
                 current = current[value.value];
             }
         }
-        return current;
+        if ("string" === typeof current) {
+            return current;
+        }
+        else {
+            var base = simpleDeepCopy(value);
+            delete base.json;
+            delete base.value;
+            return applyJsonObject_1(base, current);
+        }
     };
     var evalValue_1 = function (basePath, value) {
         if ("string" === typeof value) {
