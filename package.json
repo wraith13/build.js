@@ -1,6 +1,16 @@
 {
-  "devDependencies": {
-    "@types/node": "^18.6.2",
-    "typescript": "^4.7.4"
-  }
+    "scripts": {
+        "build all": "npm run \"generate type\" && npm run \"build script\"",
+        "generate type": "node ./evil-type.ts ./type.json",
+        "build script": "tsc -p ./tsconfig.json",
+        "watch script": "tsc --watch -p ./tsconfig.json"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wraith13/build.js.git"
+    },
+    "devDependencies": {
+        "@types/node": "^18.6.2",
+        "typescript": "^4.7.4"
+    }
 }
