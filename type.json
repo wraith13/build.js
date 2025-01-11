@@ -1,0 +1,54 @@
+{
+    "$schema": "https://raw.githubusercontent.com/wraith13/evil-type.ts/master/generated/schema/type.json#",
+    "imports": [
+        {
+            "import": "{ EvilType }",
+            "from": "./evil-type.ts/common/evil-type"
+        }
+    ],
+    "defines": {
+        "export": {
+            "type": "code",
+            "export": true,
+            "tokens": [
+                "{",
+                "EvilType",
+                "}"
+            ]
+        },
+        "Type": {
+            "type": "namespace",
+            "members": {
+                "Root": {
+                    "type": "interface",
+                    "members": {
+                        "$schema": {
+                            "const": "https://raw.githubusercontent.com/wraith13/build.js/master/json-schema.json#"
+                        },
+                        "modes": {
+                            "type": "dictionary",
+                            "valueType": {
+                                "$ref": "StyleReplaceModeType"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "options": {
+        "outputFile": "./type.ts",
+        "indentUnit": 4,
+        "indentStyle": "allman",
+        "validatorOption": "full",
+        "default": {
+            "export": true,
+            "additionalProperties": false
+        },
+        "schema": {
+            "outputFile": "./generated/schema.json",
+            "$id": "https://raw.githubusercontent.com/wraith13/build.js/master/json-schema.json#",
+            "$ref": "Type.Root"
+        }
+    }
+}
