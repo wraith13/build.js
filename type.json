@@ -19,6 +19,20 @@
         "Type": {
             "type": "namespace",
             "members": {
+                "Mode": {
+                    "type": "type",
+                    "define": {
+                        "type": "or",
+                        "types": [
+                            {
+                                "$ref": "SingleMode"
+                            },
+                            {
+                                "$ref": "MultiMode"
+                            }
+                        ]
+                    }
+                },
                 "Root": {
                     "type": "interface",
                     "members": {
@@ -28,7 +42,7 @@
                         "modes": {
                             "type": "dictionary",
                             "valueType": {
-                                "$ref": "StyleReplaceModeType"
+                                "$ref": "Mode"
                             }
                         }
                     }
