@@ -19,6 +19,55 @@
         "Type": {
             "type": "namespace",
             "members": {
+                "SinglePrimeMode": {
+                    "type": "interface",
+                    "members": {
+                        "base": {
+                            "type": "string"
+                        },
+                        "template": {
+                            "$ref": "Value"
+                        },
+                        "output": {
+                            "$ref": "PathValue"
+                        },
+                        "parameters": {
+                            "type": "or",
+                            "types": [
+                                {
+                                    "type": "dictionary",
+                                    "valueType": {
+                                        "$ref": "Value"
+                                    }
+                                },
+                                {
+                                    "$ref": "JsonValue"
+                                }
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "SingleMode": {
+                    "type": "type",
+                    "define": {
+                        "type": "or",
+                        "types": [
+                            {
+                                "$ref": "SinglePrimeMode"
+                            },
+                            {
+                                "$ref": "BuildProcessTarget"
+                            },
+                            {
+                                "$ref": "BuildReferenceTarget"
+                            },
+                            {
+                                "$ref": "BuildMetaTarget"
+                            }
+                        ]
+                    }
+                },
                 "Mode": {
                     "type": "type",
                     "define": {
