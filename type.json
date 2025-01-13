@@ -68,6 +68,39 @@
                     },
                     "additionalProperties": false
                 },
+                "BuildReferenceTarget": {
+                    "type": "interface",
+                    "members": {
+                        "references":
+                            {
+                                "type": "string"
+                            }
+                    },
+                    "additionalProperties": false
+                },
+                "BuildMetaTarget": {
+                    "type": "interface",
+                    "members": {
+                        "meta": {
+                            "$ref": "BuildTarget"
+                        },
+                        "parameters": {
+                            "type": "or",
+                            "types": [
+                                {
+                                    "type": "dictionary",
+                                    "valueType": {
+                                        "$ref": "Value"
+                                    }
+                                },
+                                {
+                                    "$ref": "JsonValue"
+                                }
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
                 "SingleMode": {
                     "type": "type",
                     "define": {
