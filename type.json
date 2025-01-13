@@ -3,7 +3,7 @@
     "imports": [
         {
             "import": "{ EvilType }",
-            "from": "./evil-type.ts/common/evil-type"
+            "from": "../evil-type.ts/common/evil-type"
         }
     ],
     "defines": {
@@ -48,6 +48,26 @@
                     },
                     "additionalProperties": false
                 },
+                "BuildProcessTarget": {
+                    "type": "interface",
+                    "members": {
+                        "processes": {
+                            "type": "or",
+                            "types": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
                 "SingleMode": {
                     "type": "type",
                     "define": {
@@ -86,7 +106,7 @@
                     "type": "interface",
                     "members": {
                         "$schema": {
-                            "const": "https://raw.githubusercontent.com/wraith13/build.js/master/json-schema.json#"
+                            "const": "https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#"
                         },
                         "modes": {
                             "type": "dictionary",
@@ -100,7 +120,7 @@
         }
     },
     "options": {
-        "outputFile": "./type.ts",
+        "outputFile": "./generated/type.ts",
         "indentUnit": 4,
         "indentStyle": "allman",
         "validatorOption": "full",
@@ -110,7 +130,7 @@
         },
         "schema": {
             "outputFile": "./generated/schema.json",
-            "$id": "https://raw.githubusercontent.com/wraith13/build.js/master/json-schema.json#",
+            "$id": "https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#",
             "$ref": "Type.Root"
         }
     }
