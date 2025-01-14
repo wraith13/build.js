@@ -101,6 +101,26 @@
                     },
                     "additionalProperties": false
                 },
+                "BuildTarget": {
+                    "type": "type",
+                    "define": {
+                        "type": "or",
+                        "types": [
+                            {
+                                "$ref": "BuildPrimeTarget"
+                            },
+                            {
+                                "$ref": "BuildProcessTarget"
+                            },
+                            {
+                                "$ref": "BuildReferenceTarget"
+                            },
+                            {
+                                "$ref": "BuildMetaTarget"
+                            }
+                        ]
+                    }
+                },
                 "SingleMode": {
                     "type": "type",
                     "define": {
