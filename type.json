@@ -121,6 +121,38 @@
                         ]
                     }
                 },
+                "MultiMode": {
+                    "type": "interface",
+                    "members": {
+                        "base": {
+                            "type": "string"
+                        },
+                        "steps": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "BuildTarget"
+                            }
+                        },
+                        "output": {
+                            "$ref": "PathValue"
+                        },
+                        "parameters": {
+                            "type": "or",
+                            "types": [
+                                {
+                                    "type": "dictionary",
+                                    "valueType": {
+                                        "$ref": "Value"
+                                    }
+                                },
+                                {
+                                    "$ref": "JsonValue"
+                                }
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
                 "Mode": {
                     "type": "type",
                     "define": {
