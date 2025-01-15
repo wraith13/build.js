@@ -48,6 +48,32 @@
                     },
                     "additionalProperties": false
                 },
+                "BuildPrimeTarget": {
+                    "type": "interface",
+                    "members": {
+                        "template": {
+                            "$ref": "Value"
+                        },
+                        "output": {
+                            "$ref": "PathValue"
+                        },
+                        "parameters": {
+                            "type": "or",
+                            "types": [
+                                {
+                                    "type": "dictionary",
+                                    "valueType": {
+                                        "$ref": "Value"
+                                    }
+                                },
+                                {
+                                    "$ref": "JsonValue"
+                                }
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
                 "BuildProcessTarget": {
                     "type": "interface",
                     "members": {
