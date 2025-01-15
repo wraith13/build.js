@@ -19,6 +19,41 @@
         "Type": {
             "type": "namespace",
             "members": {
+                "ResourceValue": {
+                    "type": "interface",
+                    "members": {
+                        "resource": {
+                            "type": "string"
+                        },
+                        "base?": {
+                            "type": "string"
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "Value": {
+                    "type": "type",
+                    "define": {
+                        "type": "or",
+                        "types": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "$ref": "PathValue"
+                            },
+                            {
+                                "$ref": "JsonValue"
+                            },
+                            {
+                                "$ref": "CallValue"
+                            },
+                            {
+                                "$ref": "ResourceValue"
+                            }
+                        ]
+                    }
+                },
                 "SinglePrimeMode": {
                     "type": "interface",
                     "members": {
@@ -57,7 +92,7 @@
                         "output": {
                             "$ref": "PathValue"
                         },
-                        "parameters": {
+                        "parameters?": {
                             "type": "or",
                             "types": [
                                 {
@@ -97,10 +132,9 @@
                 "BuildReferenceTarget": {
                     "type": "interface",
                     "members": {
-                        "references":
-                            {
-                                "type": "string"
-                            }
+                        "references": {
+                            "type": "string"
+                        }
                     },
                     "additionalProperties": false
                 },
