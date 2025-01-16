@@ -19,6 +19,29 @@
         "Type": {
             "type": "namespace",
             "members": {
+                "JsonValue": {
+                    "type": "interface",
+                    "members": {
+                        "json": {
+                            "type": "string"
+                        },
+                        "value?": {
+                            "type": "or",
+                            "types": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
                 "CallValue": {
                     "type": "interface",
                     "members": {
