@@ -19,6 +19,21 @@
         "Type": {
             "type": "namespace",
             "members": {
+                "CallValue": {
+                    "type": "interface",
+                    "members": {
+                        "call": {
+                            "type": "enum-type",
+                            "members": [
+                                "command",
+                                "command_options",
+                                "timestamp",
+                                "timestamp_tick"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
                 "ResourceValue": {
                     "type": "interface",
                     "members": {
