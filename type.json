@@ -19,6 +19,36 @@
         "Type": {
             "type": "namespace",
             "members": {
+                "BinaryPathValue": {
+                    "type": "interface",
+                    "members": {
+                        "path": {
+                            "type": "string"
+                        },
+                        "encode": {
+                            "type": "enum-type",
+                            "members": [
+                                "base64",
+                                "hex"
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
+                "PathValue": {
+                    "type": "type",
+                    "define": {
+                        "type": "or",
+                        "types": [
+                            {
+                                "$ref": "TextPathValue"
+                            },
+                            {
+                                "$ref": "BinaryPathValue"
+                            }
+                        ]
+                    }
+                },
                 "JsonValue": {
                     "type": "interface",
                     "members": {
