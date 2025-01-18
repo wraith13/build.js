@@ -19,7 +19,7 @@
         "Type": {
             "type": "namespace",
             "members": {
-                "TextPathValue": {
+                "BuildTextPathValue": {
                     "type": "interface",
                     "members": {
                         "path": {
@@ -32,7 +32,7 @@
                                     "type": "string"
                                 },
                                 "text": {
-                                    "$ref": "Value"
+                                    "$ref": "BuildValueType"
                                 }
                             },
                             "additionalProperties": false
@@ -40,7 +40,7 @@
                     },
                     "additionalProperties": false
                 },
-                "BinaryPathValue": {
+                "BuildBinaryPathValue": {
                     "type": "interface",
                     "members": {
                         "path": {
@@ -56,21 +56,21 @@
                     },
                     "additionalProperties": false
                 },
-                "PathValue": {
+                "BuildPathValue": {
                     "type": "type",
                     "define": {
                         "type": "or",
                         "types": [
                             {
-                                "$ref": "TextPathValue"
+                                "$ref": "BuildTextPathValue"
                             },
                             {
-                                "$ref": "BinaryPathValue"
+                                "$ref": "BuildBinaryPathValue"
                             }
                         ]
                     }
                 },
-                "JsonValue": {
+                "BuildJsonValue": {
                     "type": "interface",
                     "members": {
                         "json": {
@@ -93,7 +93,7 @@
                     },
                     "additionalProperties": false
                 },
-                "CallValue": {
+                "BuildCallValue": {
                     "type": "interface",
                     "members": {
                         "call": {
@@ -108,7 +108,7 @@
                     },
                     "additionalProperties": false
                 },
-                "ResourceValue": {
+                "BuildResourceValue": {
                     "type": "interface",
                     "members": {
                         "resource": {
@@ -120,7 +120,7 @@
                     },
                     "additionalProperties": false
                 },
-                "Value": {
+                "BuildValueType": {
                     "type": "type",
                     "define": {
                         "type": "or",
@@ -129,57 +129,25 @@
                                 "type": "string"
                             },
                             {
-                                "$ref": "PathValue"
+                                "$ref": "BuildPathValue"
                             },
                             {
-                                "$ref": "JsonValue"
+                                "$ref": "BuildJsonValue"
                             },
                             {
-                                "$ref": "CallValue"
+                                "$ref": "BuildCallValue"
                             },
                             {
-                                "$ref": "ResourceValue"
+                                "$ref": "BuildResourceValue"
                             }
                         ]
                     }
                 },
-                "SinglePrimeMode": {
+                "BuildModeBase": {
                     "type": "interface",
                     "members": {
                         "base": {
                             "type": "string"
-                        },
-                        "template": {
-                            "$ref": "Value"
-                        },
-                        "output": {
-                            "$ref": "PathValue"
-                        },
-                        "parameters": {
-                            "type": "or",
-                            "types": [
-                                {
-                                    "type": "dictionary",
-                                    "valueType": {
-                                        "$ref": "Value"
-                                    }
-                                },
-                                {
-                                    "$ref": "JsonValue"
-                                }
-                            ]
-                        }
-                    },
-                    "additionalProperties": false
-                },
-                "BuildPrimeTarget": {
-                    "type": "interface",
-                    "members": {
-                        "template": {
-                            "$ref": "Value"
-                        },
-                        "output": {
-                            "$ref": "PathValue"
                         },
                         "parameters?": {
                             "type": "or",
@@ -187,15 +155,53 @@
                                 {
                                     "type": "dictionary",
                                     "valueType": {
-                                        "$ref": "Value"
+                                        "$ref": "BuildValueType"
                                     }
                                 },
                                 {
-                                    "$ref": "JsonValue"
+                                    "$ref": "BuildJsonValue"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "BuildPrimeTarget": {
+                    "type": "interface",
+                    "members": {
+                        "template": {
+                            "$ref": "BuildValueType"
+                        },
+                        "output": {
+                            "$ref": "BuildPathValue"
+                        },
+                        "parameters?": {
+                            "type": "or",
+                            "types": [
+                                {
+                                    "type": "dictionary",
+                                    "valueType": {
+                                        "$ref": "BuildValueType"
+                                    }
+                                },
+                                {
+                                    "$ref": "BuildJsonValue"
                                 }
                             ]
                         }
                     },
+                    "additionalProperties": false
+                },
+                "SinglePrimeBuildMode": {
+                    "type": "interface",
+                    "extends": [
+                        {
+                            "$ref": "BuildModeBase"
+                        },
+                        {
+                            "$ref": "BuildPrimeTarget"
+                        }
+                    ],
+                    "members": {},
                     "additionalProperties": false
                 },
                 "BuildProcessTarget": {
@@ -239,11 +245,11 @@
                                 {
                                     "type": "dictionary",
                                     "valueType": {
-                                        "$ref": "Value"
+                                        "$ref": "BuildValueType"
                                     }
                                 },
                                 {
-                                    "$ref": "JsonValue"
+                                    "$ref": "BuildJsonValue"
                                 }
                             ]
                         }
@@ -270,13 +276,13 @@
                         ]
                     }
                 },
-                "SingleMode": {
+                "SingleBuildMode": {
                     "type": "type",
                     "define": {
                         "type": "or",
                         "types": [
                             {
-                                "$ref": "SinglePrimeMode"
+                                "$ref": "SinglePrimeBuildMode"
                             },
                             {
                                 "$ref": "BuildProcessTarget"
@@ -290,12 +296,14 @@
                         ]
                     }
                 },
-                "MultiMode": {
+                "MultiBuildMode": {
                     "type": "interface",
+                    "extends": [
+                        {
+                            "$ref": "BuildModeBase"
+                        }
+                    ],
                     "members": {
-                        "base": {
-                            "type": "string"
-                        },
                         "steps": {
                             "type": "array",
                             "items": {
@@ -303,40 +311,26 @@
                             }
                         },
                         "output": {
-                            "$ref": "PathValue"
-                        },
-                        "parameters": {
-                            "type": "or",
-                            "types": [
-                                {
-                                    "type": "dictionary",
-                                    "valueType": {
-                                        "$ref": "Value"
-                                    }
-                                },
-                                {
-                                    "$ref": "JsonValue"
-                                }
-                            ]
+                            "$ref": "BuildPathValue"
                         }
                     },
                     "additionalProperties": false
                 },
-                "Mode": {
+                "BuildMode": {
                     "type": "type",
                     "define": {
                         "type": "or",
                         "types": [
                             {
-                                "$ref": "SingleMode"
+                                "$ref": "SingleBuildMode"
                             },
                             {
-                                "$ref": "MultiMode"
+                                "$ref": "MultiBuildMode"
                             }
                         ]
                     }
                 },
-                "Root": {
+                "BuildJson": {
                     "type": "interface",
                     "members": {
                         "$schema": {
@@ -345,7 +339,7 @@
                         "modes": {
                             "type": "dictionary",
                             "valueType": {
-                                "$ref": "Mode"
+                                "$ref": "BuildMode"
                             }
                         }
                     }
@@ -365,7 +359,7 @@
         "schema": {
             "outputFile": "./generated/schema.json",
             "$id": "https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#",
-            "$ref": "Type.Root"
+            "$ref": "Type.BuildJson"
         }
     }
 }
