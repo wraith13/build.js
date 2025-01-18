@@ -19,6 +19,27 @@
         "Type": {
             "type": "namespace",
             "members": {
+                "TextPathValue": {
+                    "type": "interface",
+                    "members": {
+                        "path": {
+                            "type": "string"
+                        },
+                        "replace?": {
+                            "type": "interface",
+                            "members": {
+                                "match": {
+                                    "type": "string"
+                                },
+                                "text": {
+                                    "$ref": "Value"
+                                }
+                            },
+                            "additionalProperties": false
+                        }
+                    },
+                    "additionalProperties": false
+                },
                 "BinaryPathValue": {
                     "type": "interface",
                     "members": {
