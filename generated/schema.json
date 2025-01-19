@@ -1,0 +1,384 @@
+{
+    "$id": "https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$ref": "#/definitions/Type.BuildJson",
+    "definitions": {
+        "Type.BuildTextPathValue": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string"
+                },
+                "replace": {
+                    "type": "object",
+                    "properties": {
+                        "match": {
+                            "type": "string"
+                        },
+                        "text": {
+                            "$ref": "#/definitions/Type.BuildValueType"
+                        }
+                    },
+                    "required": [
+                        "match",
+                        "text"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "additionalProperties": false
+        },
+        "Type.BuildBinaryPathValue": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "string"
+                },
+                "encode": {
+                    "enum": [
+                        "base64",
+                        "hex"
+                    ]
+                }
+            },
+            "required": [
+                "path",
+                "encode"
+            ],
+            "additionalProperties": false
+        },
+        "Type.BuildPathValue": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/Type.BuildTextPathValue"
+                },
+                {
+                    "$ref": "#/definitions/Type.BuildBinaryPathValue"
+                }
+            ]
+        },
+        "Type.BuildJsonValue": {
+            "type": "object",
+            "properties": {
+                "json": {
+                    "type": "string"
+                },
+                "value": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "json"
+            ],
+            "additionalProperties": false
+        },
+        "Type.BuildCallValue": {
+            "type": "object",
+            "properties": {
+                "call": {
+                    "enum": [
+                        "command",
+                        "command_options",
+                        "timestamp",
+                        "timestamp_tick"
+                    ]
+                }
+            },
+            "required": [
+                "call"
+            ],
+            "additionalProperties": false
+        },
+        "Type.BuildResourceValue": {
+            "type": "object",
+            "properties": {
+                "resource": {
+                    "type": "string"
+                },
+                "base": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "resource"
+            ],
+            "additionalProperties": false
+        },
+        "Type.BuildValueType": {
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/definitions/Type.BuildPathValue"
+                },
+                {
+                    "$ref": "#/definitions/Type.BuildJsonValue"
+                },
+                {
+                    "$ref": "#/definitions/Type.BuildCallValue"
+                },
+                {
+                    "$ref": "#/definitions/Type.BuildResourceValue"
+                }
+            ]
+        },
+        "Type.BuildModeBase": {
+            "type": "object",
+            "properties": {
+                "base": {
+                    "type": "string"
+                },
+                "parameters": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/Type.BuildValueType"
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/Type.BuildJsonValue"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "base"
+            ],
+            "additionalProperties": false
+        },
+        "Type.BuildPrimeTarget": {
+            "type": "object",
+            "properties": {
+                "template": {
+                    "$ref": "#/definitions/Type.BuildValueType"
+                },
+                "output": {
+                    "$ref": "#/definitions/Type.BuildPathValue"
+                },
+                "parameters": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/Type.BuildValueType"
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/Type.BuildJsonValue"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "template",
+                "output"
+            ],
+            "additionalProperties": false
+        },
+        "Type.SinglePrimeBuildMode": {
+            "type": "object",
+            "properties": {
+                "base": {
+                    "type": "string"
+                },
+                "parameters": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/Type.BuildValueType"
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/Type.BuildJsonValue"
+                        }
+                    ]
+                },
+                "template": {
+                    "$ref": "#/definitions/Type.BuildValueType"
+                },
+                "output": {
+                    "$ref": "#/definitions/Type.BuildPathValue"
+                }
+            },
+            "required": [
+                "base",
+                "template",
+                "output"
+            ],
+            "additionalProperties": false
+        },
+        "Type.BuildProcessTarget": {
+            "type": "object",
+            "properties": {
+                "processes": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        },
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "processes"
+            ],
+            "additionalProperties": false
+        },
+        "Type.BuildReferenceTarget": {
+            "type": "object",
+            "properties": {
+                "references": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "references"
+            ],
+            "additionalProperties": false
+        },
+        "Type.BuildMetaTarget": {
+            "type": "object",
+            "properties": {
+                "meta": {
+                    "$ref": "#/definitions/Type.BuildTarget"
+                },
+                "parameters": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/Type.BuildValueType"
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/Type.BuildJsonValue"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "meta",
+                "parameters"
+            ],
+            "additionalProperties": false
+        },
+        "Type.BuildTarget": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/Type.BuildPrimeTarget"
+                },
+                {
+                    "$ref": "#/definitions/Type.BuildProcessTarget"
+                },
+                {
+                    "$ref": "#/definitions/Type.BuildReferenceTarget"
+                },
+                {
+                    "$ref": "#/definitions/Type.BuildMetaTarget"
+                }
+            ]
+        },
+        "Type.SingleBuildMode": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/Type.SinglePrimeBuildMode"
+                },
+                {
+                    "$ref": "#/definitions/Type.BuildProcessTarget"
+                },
+                {
+                    "$ref": "#/definitions/Type.BuildReferenceTarget"
+                },
+                {
+                    "$ref": "#/definitions/Type.BuildMetaTarget"
+                }
+            ]
+        },
+        "Type.MultiBuildMode": {
+            "type": "object",
+            "properties": {
+                "base": {
+                    "type": "string"
+                },
+                "parameters": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/Type.BuildValueType"
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/Type.BuildJsonValue"
+                        }
+                    ]
+                },
+                "steps": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Type.BuildTarget"
+                    }
+                },
+                "output": {
+                    "$ref": "#/definitions/Type.BuildPathValue"
+                }
+            },
+            "required": [
+                "steps",
+                "output",
+                "base"
+            ],
+            "additionalProperties": false
+        },
+        "Type.BuildMode": {
+            "oneOf": [
+                {
+                    "$ref": "#/definitions/Type.SingleBuildMode"
+                },
+                {
+                    "$ref": "#/definitions/Type.MultiBuildMode"
+                }
+            ]
+        },
+        "Type.BuildJson": {
+            "type": "object",
+            "properties": {
+                "$schema": {
+                    "const": "https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#"
+                },
+                "modes": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/Type.BuildMode"
+                    }
+                }
+            },
+            "required": [
+                "$schema",
+                "modes"
+            ],
+            "additionalProperties": false
+        }
+    }
+}
