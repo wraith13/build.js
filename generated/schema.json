@@ -1,7 +1,7 @@
 {
     "$id": "https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#",
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "$ref": "#/definitions/Type.BuildJson",
+    "$ref": "#/definitions/Type.Root",
     "definitions": {
         "Type.BuildTextPathValue": {
             "type": "object",
@@ -351,7 +351,7 @@
             ],
             "additionalProperties": false
         },
-        "Type.BuildMode": {
+        "Type.Mode": {
             "oneOf": [
                 {
                     "$ref": "#/definitions/Type.SingleBuildMode"
@@ -361,7 +361,7 @@
                 }
             ]
         },
-        "Type.BuildJson": {
+        "Type.Root": {
             "type": "object",
             "properties": {
                 "$schema": {
@@ -370,7 +370,7 @@
                 "modes": {
                     "type": "object",
                     "additionalProperties": {
-                        "$ref": "#/definitions/Type.BuildMode"
+                        "$ref": "#/definitions/Type.Mode"
                     }
                 }
             },

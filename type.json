@@ -316,7 +316,7 @@
                     },
                     "additionalProperties": false
                 },
-                "BuildMode": {
+                "Mode": {
                     "type": "type",
                     "define": {
                         "type": "or",
@@ -330,7 +330,7 @@
                         ]
                     }
                 },
-                "BuildJson": {
+                "Root": {
                     "type": "interface",
                     "members": {
                         "$schema": {
@@ -339,7 +339,7 @@
                         "modes": {
                             "type": "dictionary",
                             "valueType": {
-                                "$ref": "BuildMode"
+                                "$ref": "Mode"
                             }
                         }
                     }
@@ -359,7 +359,7 @@
         "schema": {
             "outputFile": "./generated/schema.json",
             "$id": "https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#",
-            "$ref": "Type.BuildJson"
+            "$ref": "Type.Root"
         }
     }
 }

@@ -45,8 +45,8 @@ var Type;
     Type.isMultiBuildMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.multiBuildModeValidatorObject, {
         additionalProperties: false
     }); });
-    Type.isBuildMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isSingleBuildMode, Type.isMultiBuildMode); });
-    Type.isBuildJson = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildJsonValidatorObject, { additionalProperties: false }); });
+    Type.isMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isSingleBuildMode, Type.isMultiBuildMode); });
+    Type.isRoot = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.rootValidatorObject, { additionalProperties: false }); });
     Type.buildTextPathValueValidatorObject = ({ path: evil_type_1.EvilType.Validator.isString, replace: evil_type_1.EvilType.Validator.isOptional(({ match: evil_type_1.EvilType.Validator.isString, text: Type.isBuildValueType,
         })), });
     Type.buildBinaryPathValueValidatorObject = ({ path: evil_type_1.EvilType.Validator.isString, encode: evil_type_1.EvilType.Validator.isEnum(["base64", "hex"]), });
@@ -65,6 +65,6 @@ var Type;
     Type.buildReferenceTargetValidatorObject = ({ references: evil_type_1.EvilType.Validator.isString, });
     Type.buildMetaTargetValidatorObject = ({ meta: Type.isBuildTarget, parameters: evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isBuildValueType), Type.isBuildJsonValue), });
     Type.multiBuildModeValidatorObject = evil_type_1.EvilType.Validator.mergeObjectValidator(Type.buildModeBaseValidatorObject, { steps: evil_type_1.EvilType.Validator.isArray(Type.isBuildTarget), output: Type.isBuildPathValue, });
-    Type.buildJsonValidatorObject = ({ $schema: evil_type_1.EvilType.Validator.isJust("https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#"), modes: evil_type_1.EvilType.Validator.isDictionaryObject(Type.isBuildMode), });
+    Type.rootValidatorObject = ({ $schema: evil_type_1.EvilType.Validator.isJust("https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#"), modes: evil_type_1.EvilType.Validator.isDictionaryObject(Type.isMode), });
 })(Type || (exports.Type = Type = {}));
 //# sourceMappingURL=type.js.map

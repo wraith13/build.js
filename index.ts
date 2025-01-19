@@ -146,7 +146,7 @@ try
         );
         return <TargetType & SourceType>target;
     };
-    const applyJson = (master: Type.BuildJson, target: Type.BuildMode, source: Type.BuildMode) =>
+    const applyJson = (master: Type.Root, target: Type.Mode, source: Type.Mode) =>
     {
         const base = (source as Type.BuildModeBase).base;
         if (base)
@@ -290,7 +290,7 @@ try
     };
     const build = (mode: string) =>
     {
-        const json: Type.BuildMode = simpleDeepCopy(master.modes.default ?? { });
+        const json: Type.Mode = simpleDeepCopy(master.modes.default ?? { });
         const modeJson = master.modes[mode];
         if (modeJson)
         {
@@ -313,7 +313,7 @@ try
     };
     const basePath = jsonPath.replace(/\/[^\/]+$/, "/");
     const master = require(jsonPath);
-    if ( ! Type.isBuildJson(master))
+    if ( ! Type.isRoot(master))
     {
         console.error(`🚫 invalid JSON: ${jsonPath}`);
         console.error(`🚫 Use this JSON Schema: ${schema}`);
