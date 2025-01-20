@@ -21,7 +21,7 @@ try
     const fs = require("fs");
     const makePath = (...path : (undefined | string)[]) => path.map(i => undefined !== i ? i: "").join("").replace(/\/\.\//gm, "/");
     const fget = (path: string) => fs.readFileSync(path, { encoding: "utf-8" });
-    const evalJsonValue = (value: Type.BuildJsonValue) =>
+    const evalJsonValue = (value: Type.JsonValue) =>
     {
         let current = JSON.parse(fget(value.json));
         if (undefined !== value.value)
@@ -81,7 +81,7 @@ try
             return result;
         }
         else
-        if (Type.isBuildJsonValue(value))
+        if (Type.isJsonValue(value))
         {
             return evalJsonValue(value);
         }
@@ -118,9 +118,9 @@ try
         }
         return null;
     };
-    const evalParameters = (parameters: { [key: string]: Type.BuildValueType; } | Type.BuildJsonValue): { [key: string]: Type.BuildValueType; } =>
+    const evalParameters = (parameters: { [key: string]: Type.BuildValueType; } | Type.JsonValue): { [key: string]: Type.BuildValueType; } =>
     {
-        if (Type.isBuildJsonValue(parameters))
+        if (Type.isJsonValue(parameters))
         {
             return evalJsonValue(parameters);
         }
@@ -246,7 +246,7 @@ try
         else
         if (Type.isBuildMetaTarget(target))
         {
-            const parameters = Type.isBuildJsonValue(target.parameters) ?
+            const parameters = Type.isJsonValue(target.parameters) ?
                 evalJsonValue(target.parameters):
                 target.parameters;
             //if (isValidArray(parameters, isValidPrimeBuildParameters))

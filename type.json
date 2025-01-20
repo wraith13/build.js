@@ -70,7 +70,7 @@
                         ]
                     }
                 },
-                "BuildJsonValue": {
+                "JsonValue": {
                     "type": "interface",
                     "members": {
                         "json": {
@@ -132,7 +132,7 @@
                                 "$ref": "BuildPathValue"
                             },
                             {
-                                "$ref": "BuildJsonValue"
+                                "$ref": "JsonValue"
                             },
                             {
                                 "$ref": "BuildCallValue"
@@ -159,7 +159,7 @@
                                     }
                                 },
                                 {
-                                    "$ref": "BuildJsonValue"
+                                    "$ref": "JsonValue"
                                 }
                             ]
                         }
@@ -184,7 +184,7 @@
                                     }
                                 },
                                 {
-                                    "$ref": "BuildJsonValue"
+                                    "$ref": "JsonValue"
                                 }
                             ]
                         }
@@ -249,7 +249,7 @@
                                     }
                                 },
                                 {
-                                    "$ref": "BuildJsonValue"
+                                    "$ref": "JsonValue"
                                 }
                             ]
                         }

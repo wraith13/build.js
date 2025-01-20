@@ -60,7 +60,7 @@
                 }
             ]
         },
-        "Type.BuildJsonValue": {
+        "Type.JsonValue": {
             "type": "object",
             "properties": {
                 "json": {
@@ -126,7 +126,7 @@
                     "$ref": "#/definitions/Type.BuildPathValue"
                 },
                 {
-                    "$ref": "#/definitions/Type.BuildJsonValue"
+                    "$ref": "#/definitions/Type.JsonValue"
                 },
                 {
                     "$ref": "#/definitions/Type.BuildCallValue"
@@ -151,7 +151,7 @@
                             }
                         },
                         {
-                            "$ref": "#/definitions/Type.BuildJsonValue"
+                            "$ref": "#/definitions/Type.JsonValue"
                         }
                     ]
                 }
@@ -179,7 +179,7 @@
                             }
                         },
                         {
-                            "$ref": "#/definitions/Type.BuildJsonValue"
+                            "$ref": "#/definitions/Type.JsonValue"
                         }
                     ]
                 }
@@ -205,7 +205,7 @@
                             }
                         },
                         {
-                            "$ref": "#/definitions/Type.BuildJsonValue"
+                            "$ref": "#/definitions/Type.JsonValue"
                         }
                     ]
                 },
@@ -272,7 +272,7 @@
                             }
                         },
                         {
-                            "$ref": "#/definitions/Type.BuildJsonValue"
+                            "$ref": "#/definitions/Type.JsonValue"
                         }
                     ]
                 }
@@ -330,7 +330,7 @@
                             }
                         },
                         {
-                            "$ref": "#/definitions/Type.BuildJsonValue"
+                            "$ref": "#/definitions/Type.JsonValue"
                         }
                     ]
                 },

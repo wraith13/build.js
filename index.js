@@ -66,7 +66,7 @@ try {
             }
             return result_1;
         }
-        else if (type_1.Type.isBuildJsonValue(value)) {
+        else if (type_1.Type.isJsonValue(value)) {
             return evalJsonValue_1(value);
         }
         else if (type_1.Type.isBuildResourceValue(value)) {
@@ -97,7 +97,7 @@ try {
         return null;
     };
     var evalParameters_1 = function (parameters) {
-        if (type_1.Type.isBuildJsonValue(parameters)) {
+        if (type_1.Type.isJsonValue(parameters)) {
             return evalJsonValue_1(parameters);
         }
         return parameters;
@@ -174,7 +174,7 @@ try {
                 .forEach(function (reference) { return build_1(reference); });
         }
         else if (type_1.Type.isBuildMetaTarget(target)) {
-            var parameters_1 = type_1.Type.isBuildJsonValue(target.parameters) ?
+            var parameters_1 = type_1.Type.isJsonValue(target.parameters) ?
                 evalJsonValue_1(target.parameters) :
                 target.parameters;
             //if (isValidArray(parameters, isValidPrimeBuildParameters))
