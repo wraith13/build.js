@@ -299,7 +299,7 @@
                 }
             ]
         },
-        "Type.SingleBuildMode": {
+        "Type.SingleMode": {
             "oneOf": [
                 {
                     "$ref": "#/definitions/Type.SinglePrimeBuildMode"
@@ -315,7 +315,7 @@
                 }
             ]
         },
-        "Type.MultiBuildMode": {
+        "Type.MultiMode": {
             "type": "object",
             "properties": {
                 "base": {
@@ -354,10 +354,10 @@
         "Type.Mode": {
             "oneOf": [
                 {
-                    "$ref": "#/definitions/Type.SingleBuildMode"
+                    "$ref": "#/definitions/Type.SingleMode"
                 },
                 {
-                    "$ref": "#/definitions/Type.MultiBuildMode"
+                    "$ref": "#/definitions/Type.MultiMode"
                 }
             ]
         },

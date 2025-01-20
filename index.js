@@ -213,7 +213,7 @@ try {
             throw new Error();
         }
         var parameters = evalParameters_1((_b = json.parameters) !== null && _b !== void 0 ? _b : {});
-        if (type_1.Type.isSingleBuildMode(json)) {
+        if (type_1.Type.isSingleMode(json)) {
             buildTrget_1(json, parameters);
         }
         else {

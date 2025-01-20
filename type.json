@@ -276,7 +276,7 @@
                         ]
                     }
                 },
-                "SingleBuildMode": {
+                "SingleMode": {
                     "type": "type",
                     "define": {
                         "type": "or",
@@ -296,7 +296,7 @@
                         ]
                     }
                 },
-                "MultiBuildMode": {
+                "MultiMode": {
                     "type": "interface",
                     "extends": [
                         {
@@ -322,10 +322,10 @@
                         "type": "or",
                         "types": [
                             {
-                                "$ref": "SingleBuildMode"
+                                "$ref": "SingleMode"
                             },
                             {
-                                "$ref": "MultiBuildMode"
+                                "$ref": "MultiMode"
                             }
                         ]
                     }

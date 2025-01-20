@@ -302,7 +302,7 @@ try
             throw new Error();
         }
         const parameters = evalParameters((json as Type.BuildModeBase).parameters ?? { });
-        if (Type.isSingleBuildMode(json))
+        if (Type.isSingleMode(json))
         {
             buildTrget(json, parameters);
         }
