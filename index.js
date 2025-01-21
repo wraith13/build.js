@@ -178,7 +178,7 @@ try {
                 evalJsonValue_1(target.parameters) :
                 target.parameters;
             //if (isValidArray(parameters, isValidPrimeBuildParameters))
-            if (type_1.EvilType.Validator.isArray(type_1.EvilType.Validator.isDictionaryObject(type_1.Type.isBuildValueType))(parameters_1)) {
+            if (type_1.EvilType.Validator.isArray(type_1.EvilType.Validator.isDictionaryObject(type_1.Type.isValueType))(parameters_1)) {
                 parameters_1.forEach(function (p) {
                     var _a, _b, _c;
                     var json = JSON.parse(applyParameters_1(JSON.stringify(target.meta), p));

@@ -32,7 +32,7 @@
                                     "type": "string"
                                 },
                                 "text": {
-                                    "$ref": "BuildValueType"
+                                    "$ref": "ValueType"
                                 }
                             },
                             "additionalProperties": false
@@ -120,7 +120,7 @@
                     },
                     "additionalProperties": false
                 },
-                "BuildValueType": {
+                "ValueType": {
                     "type": "type",
                     "define": {
                         "type": "or",
@@ -155,7 +155,7 @@
                                 {
                                     "type": "dictionary",
                                     "valueType": {
-                                        "$ref": "BuildValueType"
+                                        "$ref": "ValueType"
                                     }
                                 },
                                 {
@@ -169,7 +169,7 @@
                     "type": "interface",
                     "members": {
                         "template": {
-                            "$ref": "BuildValueType"
+                            "$ref": "ValueType"
                         },
                         "output": {
                             "$ref": "BuildPathValue"
@@ -180,7 +180,7 @@
                                 {
                                     "type": "dictionary",
                                     "valueType": {
-                                        "$ref": "BuildValueType"
+                                        "$ref": "ValueType"
                                     }
                                 },
                                 {
@@ -245,7 +245,7 @@
                                 {
                                     "type": "dictionary",
                                     "valueType": {
-                                        "$ref": "BuildValueType"
+                                        "$ref": "ValueType"
                                     }
                                 },
                                 {

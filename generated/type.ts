@@ -5,7 +5,7 @@ export namespace Type
     export interface BuildTextPathValue
     {
         path: string;
-        replace?: { match: string; text: BuildValueType; };
+        replace?: { match: string; text: ValueType; };
     }
     export interface BuildBinaryPathValue
     {
@@ -27,17 +27,17 @@ export namespace Type
         resource: string;
         base?: string;
     }
-    export type BuildValueType = string | BuildPathValue | JsonValue | BuildCallValue | BuildResourceValue;
+    export type ValueType = string | BuildPathValue | JsonValue | BuildCallValue | BuildResourceValue;
     export interface BuildModeBase
     {
         base: string;
-        parameters?: { [ key: string ]: BuildValueType; } | JsonValue;
+        parameters?: { [ key: string ]: ValueType; } | JsonValue;
     }
     export interface BuildPrimeTarget
     {
-        template: BuildValueType;
+        template: ValueType;
         output: BuildPathValue;
-        parameters?: { [ key: string ]: BuildValueType; } | JsonValue;
+        parameters?: { [ key: string ]: ValueType; } | JsonValue;
     }
     export interface SinglePrimeBuildMode extends BuildModeBase, BuildPrimeTarget
     {
@@ -53,7 +53,7 @@ export namespace Type
     export interface BuildMetaTarget
     {
         meta: BuildTarget;
-        parameters: { [ key: string ]: BuildValueType; } | JsonValue;
+        parameters: { [ key: string ]: ValueType; } | JsonValue;
     }
     export type BuildTarget = BuildPrimeTarget | BuildProcessTarget | BuildReferenceTarget | BuildMetaTarget;
     export type SingleMode = SinglePrimeBuildMode | BuildProcessTarget | BuildReferenceTarget | BuildMetaTarget;
@@ -80,7 +80,7 @@ export namespace Type
         additionalProperties: false }));
     export const isBuildResourceValue = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildResourceValueValidatorObject, {
         additionalProperties: false }));
-    export const isBuildValueType: EvilType.Validator.IsType<BuildValueType> = EvilType.lazy(() => EvilType.Validator.isOr(
+    export const isValueType: EvilType.Validator.IsType<ValueType> = EvilType.lazy(() => EvilType.Validator.isOr(
         EvilType.Validator.isString, isBuildPathValue, isJsonValue, isBuildCallValue, isBuildResourceValue));
     export const isBuildModeBase = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildModeBaseValidatorObject, {
         additionalProperties: false }));
@@ -103,8 +103,8 @@ export namespace Type
     export const isMode: EvilType.Validator.IsType<Mode> = EvilType.lazy(() => EvilType.Validator.isOr(isSingleMode, isMultiMode));
     export const isRoot = EvilType.lazy(() => EvilType.Validator.isSpecificObject(rootValidatorObject, { additionalProperties: false }));
     export const buildTextPathValueValidatorObject: EvilType.Validator.ObjectValidator<BuildTextPathValue> = ({ path:
-        EvilType.Validator.isString, replace: EvilType.Validator.isOptional(({ match: EvilType.Validator.isString, text: isBuildValueType,
-        })), });
+        EvilType.Validator.isString, replace: EvilType.Validator.isOptional(({ match: EvilType.Validator.isString, text: isValueType, })),
+        });
     export const buildBinaryPathValueValidatorObject: EvilType.Validator.ObjectValidator<BuildBinaryPathValue> = ({ path:
         EvilType.Validator.isString, encode: EvilType.Validator.isEnum([ "base64", "hex" ] as const), });
     export const jsonValueValidatorObject: EvilType.Validator.ObjectValidator<JsonValue> = ({ json: EvilType.Validator.isString, value:
@@ -115,11 +115,11 @@ export namespace Type
     export const buildResourceValueValidatorObject: EvilType.Validator.ObjectValidator<BuildResourceValue> = ({ resource:
         EvilType.Validator.isString, base: EvilType.Validator.isOptional(EvilType.Validator.isString), });
     export const buildModeBaseValidatorObject: EvilType.Validator.ObjectValidator<BuildModeBase> = ({ base: EvilType.Validator.isString,
-        parameters: EvilType.Validator.isOptional(EvilType.Validator.isOr(EvilType.Validator.isDictionaryObject(isBuildValueType),
-        isJsonValue)), });
-    export const buildPrimeTargetValidatorObject: EvilType.Validator.ObjectValidator<BuildPrimeTarget> = ({ template: isBuildValueType,
-        output: isBuildPathValue, parameters: EvilType.Validator.isOptional(EvilType.Validator.isOr(EvilType.Validator.isDictionaryObject(
-        isBuildValueType), isJsonValue)), });
+        parameters: EvilType.Validator.isOptional(EvilType.Validator.isOr(EvilType.Validator.isDictionaryObject(isValueType), isJsonValue))
+        , });
+    export const buildPrimeTargetValidatorObject: EvilType.Validator.ObjectValidator<BuildPrimeTarget> = ({ template: isValueType, output:
+        isBuildPathValue, parameters: EvilType.Validator.isOptional(EvilType.Validator.isOr(EvilType.Validator.isDictionaryObject(
+        isValueType), isJsonValue)), });
     export const singlePrimeBuildModeValidatorObject: EvilType.Validator.ObjectValidator<SinglePrimeBuildMode> =
         EvilType.Validator.mergeObjectValidator(buildModeBaseValidatorObject, buildPrimeTargetValidatorObject, { });
     export const buildProcessTargetValidatorObject: EvilType.Validator.ObjectValidator<BuildProcessTarget> = ({ processes:
@@ -127,7 +127,7 @@ export namespace Type
     export const buildReferenceTargetValidatorObject: EvilType.Validator.ObjectValidator<BuildReferenceTarget> = ({ references:
         EvilType.Validator.isString, });
     export const buildMetaTargetValidatorObject: EvilType.Validator.ObjectValidator<BuildMetaTarget> = ({ meta: isBuildTarget, parameters:
-        EvilType.Validator.isOr(EvilType.Validator.isDictionaryObject(isBuildValueType), isJsonValue), });
+        EvilType.Validator.isOr(EvilType.Validator.isDictionaryObject(isValueType), isJsonValue), });
     export const multiModeValidatorObject: EvilType.Validator.ObjectValidator<MultiMode> = EvilType.Validator.mergeObjectValidator(
         buildModeBaseValidatorObject, { steps: EvilType.Validator.isArray(isBuildTarget), output: isBuildPathValue, });
     export const rootValidatorObject: EvilType.Validator.ObjectValidator<Root> = ({ $schema: EvilType.Validator.isJust(

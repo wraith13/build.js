@@ -47,7 +47,7 @@ try
             return applyJsonObject(base, current);
         }
     };
-    const evalValue = (basePath: string, value: Type.BuildValueType) =>
+    const evalValue = (basePath: string, value: Type.ValueType) =>
     {
         if ("string" === typeof value)
         {
@@ -118,7 +118,7 @@ try
         }
         return null;
     };
-    const evalParameters = (parameters: { [key: string]: Type.BuildValueType; } | Type.JsonValue): { [key: string]: Type.BuildValueType; } =>
+    const evalParameters = (parameters: { [key: string]: Type.ValueType; } | Type.JsonValue): { [key: string]: Type.ValueType; } =>
     {
         if (Type.isJsonValue(parameters))
         {
@@ -164,7 +164,7 @@ try
         }
         applyJsonObject(target, source);
     };
-    const applyParameters = (text: string, parameters: { [key: string]: Type.BuildValueType; }) =>
+    const applyParameters = (text: string, parameters: { [key: string]: Type.ValueType; }) =>
         Object.keys(parameters).map
         (
             key => ({ key, work: evalValue(basePath, parameters[key]) })
@@ -174,7 +174,7 @@ try
             (r, p) => "string" === typeof p.work ? r.replace(new RegExp(p.key, "g"), p.work): r,
             text
         );
-    const buildFile = (template: Type.BuildValueType, output: Type.BuildPathValue, parameters: { [key: string]: Type.BuildValueType; }) =>
+    const buildFile = (template: Type.ValueType, output: Type.BuildPathValue, parameters: { [key: string]: Type.ValueType; }) =>
     {
         if ( ! template)
         {
@@ -204,7 +204,7 @@ try
             applyParameters(file, parameters)
         );
     }
-    const buildTrget = (target: Type.BuildTarget, parameters: { [key: string]: Type.BuildValueType, }) =>
+    const buildTrget = (target: Type.BuildTarget, parameters: { [key: string]: Type.ValueType, }) =>
     {
         if (Type.isBuildPrimeTarget(target))
         {
@@ -250,7 +250,7 @@ try
                 evalJsonValue(target.parameters):
                 target.parameters;
             //if (isValidArray(parameters, isValidPrimeBuildParameters))
-            if (EvilType.Validator.isArray(EvilType.Validator.isDictionaryObject(Type.isBuildValueType))(parameters))
+            if (EvilType.Validator.isArray(EvilType.Validator.isDictionaryObject(Type.isValueType))(parameters))
             {
                 parameters.forEach
                 (
