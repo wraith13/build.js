@@ -85,7 +85,7 @@
             ],
             "additionalProperties": false
         },
-        "Type.BuildCallValue": {
+        "Type.CallValue": {
             "type": "object",
             "properties": {
                 "call": {
@@ -129,7 +129,7 @@
                     "$ref": "#/definitions/Type.JsonValue"
                 },
                 {
-                    "$ref": "#/definitions/Type.BuildCallValue"
+                    "$ref": "#/definitions/Type.CallValue"
                 },
                 {
                     "$ref": "#/definitions/Type.ResourceValue"

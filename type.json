@@ -93,7 +93,7 @@
                     },
                     "additionalProperties": false
                 },
-                "BuildCallValue": {
+                "CallValue": {
                     "type": "interface",
                     "members": {
                         "call": {
@@ -135,7 +135,7 @@
                                 "$ref": "JsonValue"
                             },
                             {
-                                "$ref": "BuildCallValue"
+                                "$ref": "CallValue"
                             },
                             {
                                 "$ref": "ResourceValue"

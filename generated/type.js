@@ -13,13 +13,11 @@ var Type;
     }); });
     Type.isBuildPathValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isBuildTextPathValue, Type.isBuildBinaryPathValue); });
     Type.isJsonValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.jsonValueValidatorObject, { additionalProperties: false }); });
-    Type.isBuildCallValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildCallValueValidatorObject, {
-        additionalProperties: false
-    }); });
+    Type.isCallValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.callValueValidatorObject, { additionalProperties: false }); });
     Type.isResourceValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.resourceValueValidatorObject, {
         additionalProperties: false
     }); });
-    Type.isValueType = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, Type.isBuildPathValue, Type.isJsonValue, Type.isBuildCallValue, Type.isResourceValue); });
+    Type.isValueType = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, Type.isBuildPathValue, Type.isJsonValue, Type.isCallValue, Type.isResourceValue); });
     Type.isBuildModeBase = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildModeBaseValidatorObject, {
         additionalProperties: false
     }); });
@@ -47,9 +45,8 @@ var Type;
     });
     Type.buildBinaryPathValueValidatorObject = ({ path: evil_type_1.EvilType.Validator.isString, encode: evil_type_1.EvilType.Validator.isEnum(["base64", "hex"]), });
     Type.jsonValueValidatorObject = ({ json: evil_type_1.EvilType.Validator.isString, value: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, evil_type_1.EvilType.Validator.isArray(evil_type_1.EvilType.Validator.isString))), });
-    Type.buildCallValueValidatorObject = ({ call: evil_type_1.EvilType.Validator.isEnum([
-            "command", "command_options", "timestamp", "timestamp_tick"
-        ]), });
+    Type.callValueValidatorObject = ({ call: evil_type_1.EvilType.Validator.isEnum(["command",
+            "command_options", "timestamp", "timestamp_tick"]), });
     Type.resourceValueValidatorObject = ({ resource: evil_type_1.EvilType.Validator.isString,
         base: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isString), });
     Type.buildModeBaseValidatorObject = ({ base: evil_type_1.EvilType.Validator.isString,

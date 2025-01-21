@@ -94,7 +94,7 @@ try
                 .join("");
         }
         else
-        if (Type.isBuildCallValue(value))
+        if (Type.isCallValue(value))
         {
             switch(value.call)
             {

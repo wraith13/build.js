@@ -18,7 +18,7 @@ export namespace Type
         json: string;
         value?: string | (string[]);
     }
-    export interface BuildCallValue
+    export interface CallValue
     {
         call: "command" | "command_options" | "timestamp" | "timestamp_tick";
     }
@@ -27,7 +27,7 @@ export namespace Type
         resource: string;
         base?: string;
     }
-    export type ValueType = string | BuildPathValue | JsonValue | BuildCallValue | ResourceValue;
+    export type ValueType = string | BuildPathValue | JsonValue | CallValue | ResourceValue;
     export interface BuildModeBase
     {
         base: string;
@@ -76,12 +76,12 @@ export namespace Type
         isBuildTextPathValue, isBuildBinaryPathValue));
     export const isJsonValue = EvilType.lazy(() => EvilType.Validator.isSpecificObject(jsonValueValidatorObject, { additionalProperties:
         false }));
-    export const isBuildCallValue = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildCallValueValidatorObject, {
-        additionalProperties: false }));
+    export const isCallValue = EvilType.lazy(() => EvilType.Validator.isSpecificObject(callValueValidatorObject, { additionalProperties:
+        false }));
     export const isResourceValue = EvilType.lazy(() => EvilType.Validator.isSpecificObject(resourceValueValidatorObject, {
         additionalProperties: false }));
     export const isValueType: EvilType.Validator.IsType<ValueType> = EvilType.lazy(() => EvilType.Validator.isOr(
-        EvilType.Validator.isString, isBuildPathValue, isJsonValue, isBuildCallValue, isResourceValue));
+        EvilType.Validator.isString, isBuildPathValue, isJsonValue, isCallValue, isResourceValue));
     export const isBuildModeBase = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildModeBaseValidatorObject, {
         additionalProperties: false }));
     export const isBuildPrimeTarget = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildPrimeTargetValidatorObject, {
@@ -110,8 +110,8 @@ export namespace Type
     export const jsonValueValidatorObject: EvilType.Validator.ObjectValidator<JsonValue> = ({ json: EvilType.Validator.isString, value:
         EvilType.Validator.isOptional(EvilType.Validator.isOr(EvilType.Validator.isString, EvilType.Validator.isArray(
         EvilType.Validator.isString))), });
-    export const buildCallValueValidatorObject: EvilType.Validator.ObjectValidator<BuildCallValue> = ({ call: EvilType.Validator.isEnum([
-        "command", "command_options", "timestamp", "timestamp_tick" ] as const), });
+    export const callValueValidatorObject: EvilType.Validator.ObjectValidator<CallValue> = ({ call: EvilType.Validator.isEnum([ "command",
+        "command_options", "timestamp", "timestamp_tick" ] as const), });
     export const resourceValueValidatorObject: EvilType.Validator.ObjectValidator<ResourceValue> = ({ resource: EvilType.Validator.isString
         , base: EvilType.Validator.isOptional(EvilType.Validator.isString), });
     export const buildModeBaseValidatorObject: EvilType.Validator.ObjectValidator<BuildModeBase> = ({ base: EvilType.Validator.isString,

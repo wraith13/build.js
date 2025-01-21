@@ -75,7 +75,7 @@ try {
                 .map(function (id) { return "<div id=\"".concat(id, "\">").concat(fget_1(makePath_1(value.base, resource_1[id])).replace(/[\w\W]*(<svg)/g, "$1"), "</div>"); })
                 .join("");
         }
-        else if (type_1.Type.isBuildCallValue(value)) {
+        else if (type_1.Type.isCallValue(value)) {
             switch (value.call) {
                 case "command":
                     return process_1.argv.join(" ");
