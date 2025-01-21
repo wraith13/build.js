@@ -69,7 +69,7 @@ try {
         else if (type_1.Type.isJsonValue(value)) {
             return evalJsonValue_1(value);
         }
-        else if (type_1.Type.isBuildResourceValue(value)) {
+        else if (type_1.Type.isResourceValue(value)) {
             var resource_1 = require(makePath_1(basePath, value.resource));
             return Object.keys(resource_1)
                 .map(function (id) { return "<div id=\"".concat(id, "\">").concat(fget_1(makePath_1(value.base, resource_1[id])).replace(/[\w\W]*(<svg)/g, "$1"), "</div>"); })

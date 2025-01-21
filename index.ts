@@ -86,7 +86,7 @@ try
             return evalJsonValue(value);
         }
         else
-        if (Type.isBuildResourceValue(value))
+        if (Type.isResourceValue(value))
         {
             const resource = require(makePath(basePath, value.resource));
             return Object.keys(resource)

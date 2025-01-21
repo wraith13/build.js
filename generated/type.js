@@ -16,17 +16,17 @@ var Type;
     Type.isBuildCallValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildCallValueValidatorObject, {
         additionalProperties: false
     }); });
-    Type.isBuildResourceValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildResourceValueValidatorObject, {
+    Type.isResourceValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.resourceValueValidatorObject, {
         additionalProperties: false
     }); });
-    Type.isValueType = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, Type.isBuildPathValue, Type.isJsonValue, Type.isBuildCallValue, Type.isBuildResourceValue); });
+    Type.isValueType = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, Type.isBuildPathValue, Type.isJsonValue, Type.isBuildCallValue, Type.isResourceValue); });
     Type.isBuildModeBase = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildModeBaseValidatorObject, {
         additionalProperties: false
     }); });
     Type.isBuildPrimeTarget = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildPrimeTargetValidatorObject, {
         additionalProperties: false
     }); });
-    Type.isSinglePrimeBuildMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.singlePrimeBuildModeValidatorObject, {
+    Type.isSinglePrimeMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.singlePrimeModeValidatorObject, {
         additionalProperties: false
     }); });
     Type.isBuildProcessTarget = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildProcessTargetValidatorObject, {
@@ -39,7 +39,7 @@ var Type;
         additionalProperties: false
     }); });
     Type.isBuildTarget = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isBuildPrimeTarget, Type.isBuildProcessTarget, Type.isBuildReferenceTarget, Type.isBuildMetaTarget); });
-    Type.isSingleMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isSinglePrimeBuildMode, Type.isBuildProcessTarget, Type.isBuildReferenceTarget, Type.isBuildMetaTarget); });
+    Type.isSingleMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isSinglePrimeMode, Type.isBuildProcessTarget, Type.isBuildReferenceTarget, Type.isBuildMetaTarget); });
     Type.isMultiMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.multiModeValidatorObject, { additionalProperties: false }); });
     Type.isMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isSingleMode, Type.isMultiMode); });
     Type.isRoot = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.rootValidatorObject, { additionalProperties: false }); });
@@ -50,12 +50,13 @@ var Type;
     Type.buildCallValueValidatorObject = ({ call: evil_type_1.EvilType.Validator.isEnum([
             "command", "command_options", "timestamp", "timestamp_tick"
         ]), });
-    Type.buildResourceValueValidatorObject = ({ resource: evil_type_1.EvilType.Validator.isString, base: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isString), });
+    Type.resourceValueValidatorObject = ({ resource: evil_type_1.EvilType.Validator.isString,
+        base: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isString), });
     Type.buildModeBaseValidatorObject = ({ base: evil_type_1.EvilType.Validator.isString,
         parameters: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isJsonValue)),
     });
     Type.buildPrimeTargetValidatorObject = ({ template: Type.isValueType, output: Type.isBuildPathValue, parameters: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isJsonValue)), });
-    Type.singlePrimeBuildModeValidatorObject = evil_type_1.EvilType.Validator.mergeObjectValidator(Type.buildModeBaseValidatorObject, Type.buildPrimeTargetValidatorObject, {});
+    Type.singlePrimeModeValidatorObject = evil_type_1.EvilType.Validator.mergeObjectValidator(Type.buildModeBaseValidatorObject, Type.buildPrimeTargetValidatorObject, {});
     Type.buildProcessTargetValidatorObject = ({ processes: evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, evil_type_1.EvilType.Validator.isArray(evil_type_1.EvilType.Validator.isString)), });
     Type.buildReferenceTargetValidatorObject = ({ references: evil_type_1.EvilType.Validator.isString, });
     Type.buildMetaTargetValidatorObject = ({ meta: Type.isBuildTarget, parameters: evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isJsonValue), });

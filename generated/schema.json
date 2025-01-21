@@ -102,7 +102,7 @@
             ],
             "additionalProperties": false
         },
-        "Type.BuildResourceValue": {
+        "Type.ResourceValue": {
             "type": "object",
             "properties": {
                 "resource": {
@@ -132,7 +132,7 @@
                     "$ref": "#/definitions/Type.BuildCallValue"
                 },
                 {
-                    "$ref": "#/definitions/Type.BuildResourceValue"
+                    "$ref": "#/definitions/Type.ResourceValue"
                 }
             ]
         },
@@ -190,7 +190,7 @@
             ],
             "additionalProperties": false
         },
-        "Type.SinglePrimeBuildMode": {
+        "Type.SinglePrimeMode": {
             "type": "object",
             "properties": {
                 "base": {
@@ -302,7 +302,7 @@
         "Type.SingleMode": {
             "oneOf": [
                 {
-                    "$ref": "#/definitions/Type.SinglePrimeBuildMode"
+                    "$ref": "#/definitions/Type.SinglePrimeMode"
                 },
                 {
                     "$ref": "#/definitions/Type.BuildProcessTarget"

@@ -108,7 +108,7 @@
                     },
                     "additionalProperties": false
                 },
-                "BuildResourceValue": {
+                "ResourceValue": {
                     "type": "interface",
                     "members": {
                         "resource": {
@@ -138,7 +138,7 @@
                                 "$ref": "BuildCallValue"
                             },
                             {
-                                "$ref": "BuildResourceValue"
+                                "$ref": "ResourceValue"
                             }
                         ]
                     }
@@ -191,7 +191,7 @@
                     },
                     "additionalProperties": false
                 },
-                "SinglePrimeBuildMode": {
+                "SinglePrimeMode": {
                     "type": "interface",
                     "extends": [
                         {
@@ -282,7 +282,7 @@
                         "type": "or",
                         "types": [
                             {
-                                "$ref": "SinglePrimeBuildMode"
+                                "$ref": "SinglePrimeMode"
                             },
                             {
                                 "$ref": "BuildProcessTarget"
