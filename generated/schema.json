@@ -50,7 +50,7 @@
             ],
             "additionalProperties": false
         },
-        "Type.BuildPathValue": {
+        "Type.PathValue": {
             "oneOf": [
                 {
                     "$ref": "#/definitions/Type.BuildTextPathValue"
@@ -123,7 +123,7 @@
                     "type": "string"
                 },
                 {
-                    "$ref": "#/definitions/Type.BuildPathValue"
+                    "$ref": "#/definitions/Type.PathValue"
                 },
                 {
                     "$ref": "#/definitions/Type.JsonValue"
@@ -168,7 +168,7 @@
                     "$ref": "#/definitions/Type.ValueType"
                 },
                 "output": {
-                    "$ref": "#/definitions/Type.BuildPathValue"
+                    "$ref": "#/definitions/Type.PathValue"
                 },
                 "parameters": {
                     "oneOf": [
@@ -213,7 +213,7 @@
                     "$ref": "#/definitions/Type.ValueType"
                 },
                 "output": {
-                    "$ref": "#/definitions/Type.BuildPathValue"
+                    "$ref": "#/definitions/Type.PathValue"
                 }
             },
             "required": [
@@ -341,7 +341,7 @@
                     }
                 },
                 "output": {
-                    "$ref": "#/definitions/Type.BuildPathValue"
+                    "$ref": "#/definitions/Type.PathValue"
                 }
             },
             "required": [

@@ -56,7 +56,7 @@
                     },
                     "additionalProperties": false
                 },
-                "BuildPathValue": {
+                "PathValue": {
                     "type": "type",
                     "define": {
                         "type": "or",
@@ -129,7 +129,7 @@
                                 "type": "string"
                             },
                             {
-                                "$ref": "BuildPathValue"
+                                "$ref": "PathValue"
                             },
                             {
                                 "$ref": "JsonValue"
@@ -172,7 +172,7 @@
                             "$ref": "ValueType"
                         },
                         "output": {
-                            "$ref": "BuildPathValue"
+                            "$ref": "PathValue"
                         },
                         "parameters?": {
                             "type": "or",
@@ -311,7 +311,7 @@
                             }
                         },
                         "output": {
-                            "$ref": "BuildPathValue"
+                            "$ref": "PathValue"
                         }
                     },
                     "additionalProperties": false

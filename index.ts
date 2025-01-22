@@ -174,7 +174,7 @@ try
             (r, p) => "string" === typeof p.work ? r.replace(new RegExp(p.key, "g"), p.work): r,
             text
         );
-    const buildFile = (template: Type.ValueType, output: Type.BuildPathValue, parameters: { [key: string]: Type.ValueType; }) =>
+    const buildFile = (template: Type.ValueType, output: Type.PathValue, parameters: { [key: string]: Type.ValueType; }) =>
     {
         if ( ! template)
         {

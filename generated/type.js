@@ -11,13 +11,13 @@ var Type;
     Type.isBuildBinaryPathValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildBinaryPathValueValidatorObject, {
         additionalProperties: false
     }); });
-    Type.isBuildPathValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isBuildTextPathValue, Type.isBuildBinaryPathValue); });
+    Type.isPathValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isBuildTextPathValue, Type.isBuildBinaryPathValue); });
     Type.isJsonValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.jsonValueValidatorObject, { additionalProperties: false }); });
     Type.isCallValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.callValueValidatorObject, { additionalProperties: false }); });
     Type.isResourceValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.resourceValueValidatorObject, {
         additionalProperties: false
     }); });
-    Type.isValueType = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, Type.isBuildPathValue, Type.isJsonValue, Type.isCallValue, Type.isResourceValue); });
+    Type.isValueType = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, Type.isPathValue, Type.isJsonValue, Type.isCallValue, Type.isResourceValue); });
     Type.isBuildModeBase = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildModeBaseValidatorObject, {
         additionalProperties: false
     }); });
@@ -52,12 +52,12 @@ var Type;
     Type.buildModeBaseValidatorObject = ({ base: evil_type_1.EvilType.Validator.isString,
         parameters: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isJsonValue)),
     });
-    Type.buildPrimeTargetValidatorObject = ({ template: Type.isValueType, output: Type.isBuildPathValue, parameters: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isJsonValue)), });
+    Type.buildPrimeTargetValidatorObject = ({ template: Type.isValueType, output: Type.isPathValue, parameters: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isJsonValue)), });
     Type.singlePrimeModeValidatorObject = evil_type_1.EvilType.Validator.mergeObjectValidator(Type.buildModeBaseValidatorObject, Type.buildPrimeTargetValidatorObject, {});
     Type.buildProcessTargetValidatorObject = ({ processes: evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, evil_type_1.EvilType.Validator.isArray(evil_type_1.EvilType.Validator.isString)), });
     Type.buildReferenceTargetValidatorObject = ({ references: evil_type_1.EvilType.Validator.isString, });
     Type.buildMetaTargetValidatorObject = ({ meta: Type.isBuildTarget, parameters: evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isJsonValue), });
-    Type.multiModeValidatorObject = evil_type_1.EvilType.Validator.mergeObjectValidator(Type.buildModeBaseValidatorObject, { steps: evil_type_1.EvilType.Validator.isArray(Type.isBuildTarget), output: Type.isBuildPathValue, });
+    Type.multiModeValidatorObject = evil_type_1.EvilType.Validator.mergeObjectValidator(Type.buildModeBaseValidatorObject, { steps: evil_type_1.EvilType.Validator.isArray(Type.isBuildTarget), output: Type.isPathValue, });
     Type.rootValidatorObject = ({ $schema: evil_type_1.EvilType.Validator.isJust("https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#"), modes: evil_type_1.EvilType.Validator.isDictionaryObject(Type.isMode), });
 })(Type || (exports.Type = Type = {}));
 //# sourceMappingURL=type.js.map
