@@ -54,7 +54,7 @@ try
             return value;
         }
         else
-        if (Type.isBuildBinaryPathValue(value))
+        if (Type.isBinaryPathValue(value))
         {
             let result = fs.readFileSync(value.path);
             result = result.toString(value.encode);

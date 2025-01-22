@@ -40,7 +40,7 @@
                     },
                     "additionalProperties": false
                 },
-                "BuildBinaryPathValue": {
+                "BinaryPathValue": {
                     "type": "interface",
                     "members": {
                         "path": {
@@ -65,7 +65,7 @@
                                 "$ref": "BuildTextPathValue"
                             },
                             {
-                                "$ref": "BuildBinaryPathValue"
+                                "$ref": "BinaryPathValue"
                             }
                         ]
                     }

@@ -31,7 +31,7 @@
             ],
             "additionalProperties": false
         },
-        "Type.BuildBinaryPathValue": {
+        "Type.BinaryPathValue": {
             "type": "object",
             "properties": {
                 "path": {
@@ -56,7 +56,7 @@
                     "$ref": "#/definitions/Type.BuildTextPathValue"
                 },
                 {
-                    "$ref": "#/definitions/Type.BuildBinaryPathValue"
+                    "$ref": "#/definitions/Type.BinaryPathValue"
                 }
             ]
         },

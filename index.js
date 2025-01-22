@@ -49,7 +49,7 @@ try {
         if ("string" === typeof value) {
             return value;
         }
-        else if (type_1.Type.isBuildBinaryPathValue(value)) {
+        else if (type_1.Type.isBinaryPathValue(value)) {
             var result = fs_1.readFileSync(value.path);
             result = result.toString(value.encode);
             return result;

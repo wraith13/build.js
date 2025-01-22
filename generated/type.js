@@ -8,10 +8,10 @@ var Type;
     Type.isBuildTextPathValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildTextPathValueValidatorObject, {
         additionalProperties: false
     }); });
-    Type.isBuildBinaryPathValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildBinaryPathValueValidatorObject, {
+    Type.isBinaryPathValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.binaryPathValueValidatorObject, {
         additionalProperties: false
     }); });
-    Type.isPathValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isBuildTextPathValue, Type.isBuildBinaryPathValue); });
+    Type.isPathValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isBuildTextPathValue, Type.isBinaryPathValue); });
     Type.isJsonValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.jsonValueValidatorObject, { additionalProperties: false }); });
     Type.isCallValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.callValueValidatorObject, { additionalProperties: false }); });
     Type.isResourceValue = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.resourceValueValidatorObject, {
@@ -43,7 +43,8 @@ var Type;
     Type.isRoot = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.rootValidatorObject, { additionalProperties: false }); });
     Type.buildTextPathValueValidatorObject = ({ path: evil_type_1.EvilType.Validator.isString, replace: evil_type_1.EvilType.Validator.isOptional(({ match: evil_type_1.EvilType.Validator.isString, text: Type.isValueType, })),
     });
-    Type.buildBinaryPathValueValidatorObject = ({ path: evil_type_1.EvilType.Validator.isString, encode: evil_type_1.EvilType.Validator.isEnum(["base64", "hex"]), });
+    Type.binaryPathValueValidatorObject = ({ path: evil_type_1.EvilType.Validator.isString,
+        encode: evil_type_1.EvilType.Validator.isEnum(["base64", "hex"]), });
     Type.jsonValueValidatorObject = ({ json: evil_type_1.EvilType.Validator.isString, value: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, evil_type_1.EvilType.Validator.isArray(evil_type_1.EvilType.Validator.isString))), });
     Type.callValueValidatorObject = ({ call: evil_type_1.EvilType.Validator.isEnum(["command",
             "command_options", "timestamp", "timestamp_tick"]), });

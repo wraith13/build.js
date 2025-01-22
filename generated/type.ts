@@ -7,12 +7,12 @@ export namespace Type
         path: string;
         replace?: { match: string; text: ValueType; };
     }
-    export interface BuildBinaryPathValue
+    export interface BinaryPathValue
     {
         path: string;
         encode: "base64" | "hex";
     }
-    export type PathValue = BuildTextPathValue | BuildBinaryPathValue;
+    export type PathValue = BuildTextPathValue | BinaryPathValue;
     export interface JsonValue
     {
         json: string;
@@ -70,10 +70,10 @@ export namespace Type
     }
     export const isBuildTextPathValue = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildTextPathValueValidatorObject, {
         additionalProperties: false }));
-    export const isBuildBinaryPathValue = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildBinaryPathValueValidatorObject, {
+    export const isBinaryPathValue = EvilType.lazy(() => EvilType.Validator.isSpecificObject(binaryPathValueValidatorObject, {
         additionalProperties: false }));
     export const isPathValue: EvilType.Validator.IsType<PathValue> = EvilType.lazy(() => EvilType.Validator.isOr(isBuildTextPathValue,
-        isBuildBinaryPathValue));
+        isBinaryPathValue));
     export const isJsonValue = EvilType.lazy(() => EvilType.Validator.isSpecificObject(jsonValueValidatorObject, { additionalProperties:
         false }));
     export const isCallValue = EvilType.lazy(() => EvilType.Validator.isSpecificObject(callValueValidatorObject, { additionalProperties:
@@ -105,8 +105,8 @@ export namespace Type
     export const buildTextPathValueValidatorObject: EvilType.Validator.ObjectValidator<BuildTextPathValue> = ({ path:
         EvilType.Validator.isString, replace: EvilType.Validator.isOptional(({ match: EvilType.Validator.isString, text: isValueType, })),
         });
-    export const buildBinaryPathValueValidatorObject: EvilType.Validator.ObjectValidator<BuildBinaryPathValue> = ({ path:
-        EvilType.Validator.isString, encode: EvilType.Validator.isEnum([ "base64", "hex" ] as const), });
+    export const binaryPathValueValidatorObject: EvilType.Validator.ObjectValidator<BinaryPathValue> = ({ path: EvilType.Validator.isString
+        , encode: EvilType.Validator.isEnum([ "base64", "hex" ] as const), });
     export const jsonValueValidatorObject: EvilType.Validator.ObjectValidator<JsonValue> = ({ json: EvilType.Validator.isString, value:
         EvilType.Validator.isOptional(EvilType.Validator.isOr(EvilType.Validator.isString, EvilType.Validator.isArray(
         EvilType.Validator.isString))), });
