@@ -313,10 +313,12 @@ try
     };
     const basePath = jsonPath.replace(/\/[^\/]+$/, "/");
     const master = require(jsonPath);
-    if ( ! Type.isRoot(master))
+    const listner = EvilType.Error.makeListener(jsonPath);
+    if ( ! Type.isRoot(master, listner))
     {
         console.error(`🚫 invalid JSON: ${jsonPath}`);
         console.error(`🚫 Use this JSON Schema: ${schema}`);
+        console.error(listner.errors);
         throw new Error();
     }
     build(mode);

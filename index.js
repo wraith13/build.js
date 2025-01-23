@@ -222,9 +222,11 @@ try {
     };
     var basePath_1 = jsonPath.replace(/\/[^\/]+$/, "/");
     var master_1 = require(jsonPath);
-    if (!type_1.Type.isRoot(master_1)) {
+    var listner = type_1.EvilType.Error.makeListener(jsonPath);
+    if (!type_1.Type.isRoot(master_1, listner)) {
         console.error("\uD83D\uDEAB invalid JSON: ".concat(jsonPath));
         console.error("\uD83D\uDEAB Use this JSON Schema: ".concat(schema));
+        console.error(listner.errors);
         throw new Error();
     }
     build_1(mode);

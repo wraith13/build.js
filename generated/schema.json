@@ -156,9 +156,7 @@
                     ]
                 }
             },
-            "required": [
-                "base"
-            ],
+            "required": [],
             "additionalProperties": false
         },
         "Type.BuildPrimeTarget": {
@@ -217,7 +215,6 @@
                 }
             },
             "required": [
-                "base",
                 "template",
                 "output"
             ],
@@ -339,17 +336,17 @@
                     "items": {
                         "$ref": "#/definitions/Type.BuildTarget"
                     }
-                },
-                "output": {
-                    "$ref": "#/definitions/Type.PathValue"
                 }
             },
             "required": [
-                "steps",
-                "output",
-                "base"
+                "steps"
             ],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "not": {
+                "required": [
+                    "output"
+                ]
+            }
         },
         "Type.Mode": {
             "oneOf": [
