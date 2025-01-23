@@ -3,7 +3,7 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "$ref": "#/definitions/Type.Root",
     "definitions": {
-        "Type.BuildTextPathValue": {
+        "Type.TextPathValue": {
             "type": "object",
             "properties": {
                 "path": {
@@ -53,7 +53,7 @@
         "Type.PathValue": {
             "oneOf": [
                 {
-                    "$ref": "#/definitions/Type.BuildTextPathValue"
+                    "$ref": "#/definitions/Type.TextPathValue"
                 },
                 {
                     "$ref": "#/definitions/Type.BinaryPathValue"

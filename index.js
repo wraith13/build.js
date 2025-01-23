@@ -54,7 +54,7 @@ try {
             result = result.toString(value.encode);
             return result;
         }
-        else if (type_1.Type.isBuildTextPathValue(value)) {
+        else if (type_1.Type.isTextPathValue(value)) {
             var result_1 = fget_1(value.path);
             if (value.replace) {
                 if (Array.isArray(value.replace)) {

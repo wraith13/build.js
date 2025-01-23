@@ -19,7 +19,7 @@
         "Type": {
             "type": "namespace",
             "members": {
-                "BuildTextPathValue": {
+                "TextPathValue": {
                     "type": "interface",
                     "members": {
                         "path": {
@@ -62,7 +62,7 @@
                         "type": "or",
                         "types": [
                             {
-                                "$ref": "BuildTextPathValue"
+                                "$ref": "TextPathValue"
                             },
                             {
                                 "$ref": "BinaryPathValue"

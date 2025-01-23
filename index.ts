@@ -61,7 +61,7 @@ try
             return result;
         }
         else
-        if (Type.isBuildTextPathValue(value))
+        if (Type.isTextPathValue(value))
         {
             let result = fget(value.path);
             if (value.replace)
