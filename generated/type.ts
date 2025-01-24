@@ -57,12 +57,18 @@ export namespace Type
     }
     export type BuildTarget = BuildPrimeTarget | BuildProcessTarget | BuildReferenceTarget | BuildMetaTarget;
     export type SingleMode = SinglePrimeMode | BuildProcessTarget | BuildReferenceTarget | BuildMetaTarget;
+    export interface PartialSingleMode
+    {
+        base?: string;
+        template?: ValueType;
+        output?: PathValue;
+        parameters?: { [ key: string ]: ValueType; } | JsonValue;
+    }
     export interface MultiMode extends BuildModeBase
     {
         steps: BuildTarget[];
-        output: never;
     }
-    export type Mode = SingleMode | MultiMode;
+    export type Mode = PartialSingleMode | SingleMode | MultiMode;
     export interface Root
     {
         $schema: "https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#";
@@ -98,9 +104,12 @@ export namespace Type
         isBuildProcessTarget, isBuildReferenceTarget, isBuildMetaTarget));
     export const isSingleMode: EvilType.Validator.IsType<SingleMode> = EvilType.lazy(() => EvilType.Validator.isOr(isSinglePrimeMode,
         isBuildProcessTarget, isBuildReferenceTarget, isBuildMetaTarget));
+    export const isPartialSingleMode = EvilType.lazy(() => EvilType.Validator.isSpecificObject(partialSingleModeValidatorObject, {
+        additionalProperties: false }));
     export const isMultiMode = EvilType.lazy(() => EvilType.Validator.isSpecificObject(multiModeValidatorObject, { additionalProperties:
         false }));
-    export const isMode: EvilType.Validator.IsType<Mode> = EvilType.lazy(() => EvilType.Validator.isOr(isSingleMode, isMultiMode));
+    export const isMode: EvilType.Validator.IsType<Mode> = EvilType.lazy(() => EvilType.Validator.isOr(isPartialSingleMode, isSingleMode,
+        isMultiMode));
     export const isRoot = EvilType.lazy(() => EvilType.Validator.isSpecificObject(rootValidatorObject, { additionalProperties: false }));
     export const textPathValueValidatorObject: EvilType.Validator.ObjectValidator<TextPathValue> = ({ path: EvilType.Validator.isString,
         replace: EvilType.Validator.isOptional(({ match: EvilType.Validator.isString, text: isValueType, })), });
@@ -127,9 +136,12 @@ export namespace Type
         EvilType.Validator.isString, });
     export const buildMetaTargetValidatorObject: EvilType.Validator.ObjectValidator<BuildMetaTarget> = ({ meta: isBuildTarget, parameters:
         EvilType.Validator.isOr(EvilType.Validator.isDictionaryObject(isValueType), isJsonValue), });
+    export const partialSingleModeValidatorObject: EvilType.Validator.ObjectValidator<PartialSingleMode> = ({ base:
+        EvilType.Validator.isOptional(EvilType.Validator.isString), template: EvilType.Validator.isOptional(isValueType), output:
+        EvilType.Validator.isOptional(isPathValue), parameters: EvilType.Validator.isOptional(EvilType.Validator.isOr(
+        EvilType.Validator.isDictionaryObject(isValueType), isJsonValue)), });
     export const multiModeValidatorObject: EvilType.Validator.ObjectValidator<MultiMode> = EvilType.Validator.mergeObjectValidator(
-        buildModeBaseValidatorObject, { steps: EvilType.Validator.isArray(isBuildTarget), output: { "$type": "never-type-guard" } as const,
-        });
+        buildModeBaseValidatorObject, { steps: EvilType.Validator.isArray(isBuildTarget), });
     export const rootValidatorObject: EvilType.Validator.ObjectValidator<Root> = ({ $schema: EvilType.Validator.isJust(
         "https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#" as const), modes:
         EvilType.Validator.isDictionaryObject(isMode), });

@@ -302,13 +302,19 @@ try
             throw new Error();
         }
         const parameters = evalParameters((json as Type.BuildModeBase).parameters ?? { });
+        if (Type.isMultiMode(json))
+        {
+            json.steps.forEach(i => buildTrget(i, parameters));
+        }
+        else
         if (Type.isSingleMode(json))
         {
             buildTrget(json, parameters);
         }
         else
         {
-            json.steps.forEach(i => buildTrget(i, parameters));
+            console.error(`🚫 unknown mode type: ${JSON.stringify(mode)} in ${JSON.stringify(json)}`);
+            throw new Error();
         }
     };
     const basePath = jsonPath.replace(/\/[^\/]+$/, "/");

@@ -213,11 +213,15 @@ try {
             throw new Error();
         }
         var parameters = evalParameters_1((_b = json.parameters) !== null && _b !== void 0 ? _b : {});
-        if (type_1.Type.isSingleMode(json)) {
+        if (type_1.Type.isMultiMode(json)) {
+            json.steps.forEach(function (i) { return buildTrget_1(i, parameters); });
+        }
+        else if (type_1.Type.isSingleMode(json)) {
             buildTrget_1(json, parameters);
         }
         else {
-            json.steps.forEach(function (i) { return buildTrget_1(i, parameters); });
+            console.error("\uD83D\uDEAB unknown mode type: ".concat(JSON.stringify(mode), " in ").concat(JSON.stringify(json)));
+            throw new Error();
         }
     };
     var basePath_1 = jsonPath.replace(/\/[^\/]+$/, "/");

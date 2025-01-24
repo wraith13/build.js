@@ -38,8 +38,11 @@ var Type;
     }); });
     Type.isBuildTarget = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isBuildPrimeTarget, Type.isBuildProcessTarget, Type.isBuildReferenceTarget, Type.isBuildMetaTarget); });
     Type.isSingleMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isSinglePrimeMode, Type.isBuildProcessTarget, Type.isBuildReferenceTarget, Type.isBuildMetaTarget); });
+    Type.isPartialSingleMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.partialSingleModeValidatorObject, {
+        additionalProperties: false
+    }); });
     Type.isMultiMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.multiModeValidatorObject, { additionalProperties: false }); });
-    Type.isMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isSingleMode, Type.isMultiMode); });
+    Type.isMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isPartialSingleMode, Type.isSingleMode, Type.isMultiMode); });
     Type.isRoot = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.rootValidatorObject, { additionalProperties: false }); });
     Type.textPathValueValidatorObject = ({ path: evil_type_1.EvilType.Validator.isString,
         replace: evil_type_1.EvilType.Validator.isOptional(({ match: evil_type_1.EvilType.Validator.isString, text: Type.isValueType, })), });
@@ -56,8 +59,8 @@ var Type;
     Type.buildProcessTargetValidatorObject = ({ processes: evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, evil_type_1.EvilType.Validator.isArray(evil_type_1.EvilType.Validator.isString)), });
     Type.buildReferenceTargetValidatorObject = ({ references: evil_type_1.EvilType.Validator.isString, });
     Type.buildMetaTargetValidatorObject = ({ meta: Type.isBuildTarget, parameters: evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isJsonValue), });
-    Type.multiModeValidatorObject = evil_type_1.EvilType.Validator.mergeObjectValidator(Type.buildModeBaseValidatorObject, { steps: evil_type_1.EvilType.Validator.isArray(Type.isBuildTarget), output: { "$type": "never-type-guard" },
-    });
+    Type.partialSingleModeValidatorObject = ({ base: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isString), template: evil_type_1.EvilType.Validator.isOptional(Type.isValueType), output: evil_type_1.EvilType.Validator.isOptional(Type.isPathValue), parameters: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isJsonValue)), });
+    Type.multiModeValidatorObject = evil_type_1.EvilType.Validator.mergeObjectValidator(Type.buildModeBaseValidatorObject, { steps: evil_type_1.EvilType.Validator.isArray(Type.isBuildTarget), });
     Type.rootValidatorObject = ({ $schema: evil_type_1.EvilType.Validator.isJust("https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#"), modes: evil_type_1.EvilType.Validator.isDictionaryObject(Type.isMode), });
 })(Type || (exports.Type = Type = {}));
 //# sourceMappingURL=type.js.map

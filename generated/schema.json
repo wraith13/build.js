@@ -312,6 +312,35 @@
                 }
             ]
         },
+        "Type.PartialSingleMode": {
+            "type": "object",
+            "properties": {
+                "base": {
+                    "type": "string"
+                },
+                "template": {
+                    "$ref": "#/definitions/Type.ValueType"
+                },
+                "output": {
+                    "$ref": "#/definitions/Type.PathValue"
+                },
+                "parameters": {
+                    "oneOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/Type.ValueType"
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/Type.JsonValue"
+                        }
+                    ]
+                }
+            },
+            "required": [],
+            "additionalProperties": false
+        },
         "Type.MultiMode": {
             "type": "object",
             "properties": {
@@ -341,15 +370,13 @@
             "required": [
                 "steps"
             ],
-            "additionalProperties": false,
-            "not": {
-                "required": [
-                    "output"
-                ]
-            }
+            "additionalProperties": false
         },
         "Type.Mode": {
             "oneOf": [
+                {
+                    "$ref": "#/definitions/Type.PartialSingleMode"
+                },
                 {
                     "$ref": "#/definitions/Type.SingleMode"
                 },

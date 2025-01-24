@@ -188,8 +188,7 @@
                                 }
                             ]
                         }
-                    },
-                    "additionalProperties": false
+                    }
                 },
                 "SinglePrimeMode": {
                     "type": "interface",
@@ -201,8 +200,7 @@
                             "$ref": "BuildPrimeTarget"
                         }
                     ],
-                    "members": {},
-                    "additionalProperties": false
+                    "members": {}
                 },
                 "BuildProcessTarget": {
                     "type": "interface",
@@ -221,8 +219,7 @@
                                 }
                             ]
                         }
-                    },
-                    "additionalProperties": false
+                    }
                 },
                 "BuildReferenceTarget": {
                     "type": "interface",
@@ -230,8 +227,7 @@
                         "references": {
                             "type": "string"
                         }
-                    },
-                    "additionalProperties": false
+                    }
                 },
                 "BuildMetaTarget": {
                     "type": "interface",
@@ -253,8 +249,7 @@
                                 }
                             ]
                         }
-                    },
-                    "additionalProperties": false
+                    }
                 },
                 "BuildTarget": {
                     "type": "type",
@@ -296,6 +291,35 @@
                         ]
                     }
                 },
+                "PartialSingleMode": {
+                    "type": "interface",
+                    "members": {
+                        "base?": {
+                            "type": "string"
+                        },
+                        "template?": {
+                            "$ref": "ValueType"
+                        },
+                        "output?": {
+                            "$ref": "PathValue"
+                        },
+                        "parameters?": {
+                            "type": "or",
+                            "types": [
+                                {
+                                    "type": "dictionary",
+                                    "valueType": {
+                                        "$ref": "ValueType"
+                                    }
+                                },
+                                {
+                                    "$ref": "JsonValue"
+                                }
+                            ]
+                        }
+                    },
+                    "additionalProperties": false
+                },
                 "MultiMode": {
                     "type": "interface",
                     "extends": [
@@ -309,18 +333,17 @@
                             "items": {
                                 "$ref": "BuildTarget"
                             }
-                        },
-                        "output": {
-                            "type": "never"
                         }
-                    },
-                    "additionalProperties": false
+                    }
                 },
                 "Mode": {
                     "type": "type",
                     "define": {
                         "type": "or",
                         "types": [
+                            {
+                                "$ref": "PartialSingleMode"
+                            },
                             {
                                 "$ref": "SingleMode"
                             },
