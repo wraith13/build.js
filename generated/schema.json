@@ -175,9 +175,6 @@
                             "additionalProperties": {
                                 "$ref": "#/definitions/Type.ValueType"
                             }
-                        },
-                        {
-                            "$ref": "#/definitions/Type.JsonValue"
                         }
                     ]
                 }
@@ -201,9 +198,6 @@
                             "additionalProperties": {
                                 "$ref": "#/definitions/Type.ValueType"
                             }
-                        },
-                        {
-                            "$ref": "#/definitions/Type.JsonValue"
                         }
                     ]
                 },
@@ -315,15 +309,6 @@
         "Type.PartialSingleMode": {
             "type": "object",
             "properties": {
-                "base": {
-                    "type": "string"
-                },
-                "template": {
-                    "$ref": "#/definitions/Type.ValueType"
-                },
-                "output": {
-                    "$ref": "#/definitions/Type.PathValue"
-                },
                 "parameters": {
                     "oneOf": [
                         {
@@ -338,7 +323,9 @@
                     ]
                 }
             },
-            "required": [],
+            "required": [
+                "parameters"
+            ],
             "additionalProperties": false
         },
         "Type.MultiMode": {

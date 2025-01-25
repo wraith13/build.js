@@ -182,9 +182,6 @@
                                     "valueType": {
                                         "$ref": "ValueType"
                                     }
-                                },
-                                {
-                                    "$ref": "JsonValue"
                                 }
                             ]
                         }
@@ -294,16 +291,7 @@
                 "PartialSingleMode": {
                     "type": "interface",
                     "members": {
-                        "base?": {
-                            "type": "string"
-                        },
-                        "template?": {
-                            "$ref": "ValueType"
-                        },
-                        "output?": {
-                            "$ref": "PathValue"
-                        },
-                        "parameters?": {
+                        "parameters": {
                             "type": "or",
                             "types": [
                                 {

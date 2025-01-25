@@ -42,7 +42,7 @@ var Type;
         additionalProperties: false
     }); });
     Type.isMultiMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.multiModeValidatorObject, { additionalProperties: false }); });
-    Type.isMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isPartialSingleMode, Type.isSingleMode, Type.isMultiMode); });
+    Type.isMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(Type.isPartialSingleMode, Type.isMultiMode); });
     Type.isRoot = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.rootValidatorObject, { additionalProperties: false }); });
     Type.textPathValueValidatorObject = ({ path: evil_type_1.EvilType.Validator.isString,
         replace: evil_type_1.EvilType.Validator.isOptional(({ match: evil_type_1.EvilType.Validator.isString, text: Type.isValueType, })), });
