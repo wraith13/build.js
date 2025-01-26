@@ -93,6 +93,15 @@
                     },
                     "additionalProperties": false
                 },
+                "NotJsonValue": {
+                    "type": "interface",
+                    "members": {
+                        "json": {
+                            "type": "never"
+                        }
+                    },
+                    "additionalProperties": true
+                },
                 "CallValue": {
                     "type": "interface",
                     "members": {
@@ -153,10 +162,18 @@
                             "type": "or",
                             "types": [
                                 {
-                                    "type": "dictionary",
-                                    "valueType": {
-                                        "$ref": "ValueType"
-                                    }
+                                    "type": "and",
+                                    "types": [
+                                        {
+                                            "type": "dictionary",
+                                            "valueType": {
+                                                "$ref": "ValueType"
+                                            }
+                                        },
+                                        {
+                                            "$ref": "NotJsonValue"
+                                        }
+                                    ]
                                 },
                                 {
                                     "$ref": "JsonValue"
@@ -178,10 +195,21 @@
                             "type": "or",
                             "types": [
                                 {
-                                    "type": "dictionary",
-                                    "valueType": {
-                                        "$ref": "ValueType"
-                                    }
+                                    "type": "and",
+                                    "types": [
+                                        {
+                                            "type": "dictionary",
+                                            "valueType": {
+                                                "$ref": "ValueType"
+                                            }
+                                        },
+                                        {
+                                            "$ref": "NotJsonValue"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "$ref": "JsonValue"
                                 }
                             ]
                         }
@@ -236,10 +264,18 @@
                             "type": "or",
                             "types": [
                                 {
-                                    "type": "dictionary",
-                                    "valueType": {
-                                        "$ref": "ValueType"
-                                    }
+                                    "type": "and",
+                                    "types": [
+                                        {
+                                            "type": "dictionary",
+                                            "valueType": {
+                                                "$ref": "ValueType"
+                                            }
+                                        },
+                                        {
+                                            "$ref": "NotJsonValue"
+                                        }
+                                    ]
                                 },
                                 {
                                     "$ref": "JsonValue"
