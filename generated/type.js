@@ -19,6 +19,7 @@ var Type;
         additionalProperties: false
     }); });
     Type.isValueType = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, Type.isPathValue, Type.isJsonValue, Type.isCallValue, Type.isResourceValue); });
+    Type.isParametersType = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isAnd(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isNotJsonValue), Type.isJsonValue); });
     Type.isBuildModeBase = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildModeBaseValidatorObject, {
         additionalProperties: false
     }); });
@@ -56,14 +57,13 @@ var Type;
             "command_options", "timestamp", "timestamp_tick"]), });
     Type.resourceValueValidatorObject = ({ resource: evil_type_1.EvilType.Validator.isString,
         base: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isString), });
-    Type.buildModeBaseValidatorObject = ({ base: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isString), parameters: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isAnd(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isNotJsonValue), Type.isJsonValue)), });
-    Type.buildPrimeTargetValidatorObject = ({ template: Type.isValueType, output: Type.isPathValue, parameters: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isAnd(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isNotJsonValue), Type.isJsonValue)), });
+    Type.buildModeBaseValidatorObject = ({ base: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isString), parameters: evil_type_1.EvilType.Validator.isOptional(Type.isParametersType), });
+    Type.buildPrimeTargetValidatorObject = ({ template: Type.isValueType, output: Type.isPathValue, parameters: evil_type_1.EvilType.Validator.isOptional(Type.isParametersType), });
     Type.singlePrimeModeValidatorObject = evil_type_1.EvilType.Validator.mergeObjectValidator(Type.buildModeBaseValidatorObject, Type.buildPrimeTargetValidatorObject, {});
     Type.buildProcessTargetValidatorObject = ({ processes: evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, evil_type_1.EvilType.Validator.isArray(evil_type_1.EvilType.Validator.isString)), });
     Type.buildReferenceTargetValidatorObject = ({ references: evil_type_1.EvilType.Validator.isString, });
-    Type.buildMetaTargetValidatorObject = ({ meta: Type.isBuildTarget, parameters: evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isAnd(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isNotJsonValue), Type.isJsonValue),
-    });
-    Type.partialSingleModeValidatorObject = ({ parameters: evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isAnd(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isNotJsonValue), Type.isJsonValue),
+    Type.buildMetaTargetValidatorObject = ({ meta: Type.isBuildTarget, parameters: Type.isParametersType, });
+    Type.partialSingleModeValidatorObject = ({ parameters: Type.isParametersType,
     });
     Type.multiModeValidatorObject = evil_type_1.EvilType.Validator.mergeObjectValidator(Type.buildModeBaseValidatorObject, { steps: evil_type_1.EvilType.Validator.isArray(Type.isBuildTarget), });
     Type.rootValidatorObject = ({ $schema: evil_type_1.EvilType.Validator.isJust("https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#"), modes: evil_type_1.EvilType.Validator.isDictionaryObject(Type.isMode), });

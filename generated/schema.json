@@ -147,6 +147,26 @@
                 }
             ]
         },
+        "Type.ParametersType": {
+            "oneOf": [
+                {
+                    "allOf": [
+                        {
+                            "type": "object",
+                            "additionalProperties": {
+                                "$ref": "#/definitions/Type.ValueType"
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/Type.NotJsonValue"
+                        }
+                    ]
+                },
+                {
+                    "$ref": "#/definitions/Type.JsonValue"
+                }
+            ]
+        },
         "Type.BuildModeBase": {
             "type": "object",
             "properties": {
@@ -154,24 +174,7 @@
                     "type": "string"
                 },
                 "parameters": {
-                    "oneOf": [
-                        {
-                            "allOf": [
-                                {
-                                    "type": "object",
-                                    "additionalProperties": {
-                                        "$ref": "#/definitions/Type.ValueType"
-                                    }
-                                },
-                                {
-                                    "$ref": "#/definitions/Type.NotJsonValue"
-                                }
-                            ]
-                        },
-                        {
-                            "$ref": "#/definitions/Type.JsonValue"
-                        }
-                    ]
+                    "$ref": "#/definitions/Type.ParametersType"
                 }
             },
             "required": [],
@@ -187,24 +190,7 @@
                     "$ref": "#/definitions/Type.PathValue"
                 },
                 "parameters": {
-                    "oneOf": [
-                        {
-                            "allOf": [
-                                {
-                                    "type": "object",
-                                    "additionalProperties": {
-                                        "$ref": "#/definitions/Type.ValueType"
-                                    }
-                                },
-                                {
-                                    "$ref": "#/definitions/Type.NotJsonValue"
-                                }
-                            ]
-                        },
-                        {
-                            "$ref": "#/definitions/Type.JsonValue"
-                        }
-                    ]
+                    "$ref": "#/definitions/Type.ParametersType"
                 }
             },
             "required": [
@@ -220,24 +206,7 @@
                     "type": "string"
                 },
                 "parameters": {
-                    "oneOf": [
-                        {
-                            "allOf": [
-                                {
-                                    "type": "object",
-                                    "additionalProperties": {
-                                        "$ref": "#/definitions/Type.ValueType"
-                                    }
-                                },
-                                {
-                                    "$ref": "#/definitions/Type.NotJsonValue"
-                                }
-                            ]
-                        },
-                        {
-                            "$ref": "#/definitions/Type.JsonValue"
-                        }
-                    ]
+                    "$ref": "#/definitions/Type.ParametersType"
                 },
                 "template": {
                     "$ref": "#/definitions/Type.ValueType"
@@ -293,24 +262,7 @@
                     "$ref": "#/definitions/Type.BuildTarget"
                 },
                 "parameters": {
-                    "oneOf": [
-                        {
-                            "allOf": [
-                                {
-                                    "type": "object",
-                                    "additionalProperties": {
-                                        "$ref": "#/definitions/Type.ValueType"
-                                    }
-                                },
-                                {
-                                    "$ref": "#/definitions/Type.NotJsonValue"
-                                }
-                            ]
-                        },
-                        {
-                            "$ref": "#/definitions/Type.JsonValue"
-                        }
-                    ]
+                    "$ref": "#/definitions/Type.ParametersType"
                 }
             },
             "required": [
@@ -355,24 +307,7 @@
             "type": "object",
             "properties": {
                 "parameters": {
-                    "oneOf": [
-                        {
-                            "allOf": [
-                                {
-                                    "type": "object",
-                                    "additionalProperties": {
-                                        "$ref": "#/definitions/Type.ValueType"
-                                    }
-                                },
-                                {
-                                    "$ref": "#/definitions/Type.NotJsonValue"
-                                }
-                            ]
-                        },
-                        {
-                            "$ref": "#/definitions/Type.JsonValue"
-                        }
-                    ]
+                    "$ref": "#/definitions/Type.ParametersType"
                 }
             },
             "required": [
@@ -387,24 +322,7 @@
                     "type": "string"
                 },
                 "parameters": {
-                    "oneOf": [
-                        {
-                            "allOf": [
-                                {
-                                    "type": "object",
-                                    "additionalProperties": {
-                                        "$ref": "#/definitions/Type.ValueType"
-                                    }
-                                },
-                                {
-                                    "$ref": "#/definitions/Type.NotJsonValue"
-                                }
-                            ]
-                        },
-                        {
-                            "$ref": "#/definitions/Type.JsonValue"
-                        }
-                    ]
+                    "$ref": "#/definitions/Type.ParametersType"
                 },
                 "steps": {
                     "type": "array",

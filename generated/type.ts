@@ -32,16 +32,17 @@ export namespace Type
         base?: string;
     }
     export type ValueType = string | PathValue | JsonValue | CallValue | ResourceValue;
+    export type ParametersType = (& NotJsonValue) | JsonValue;
     export interface BuildModeBase
     {
         base?: string;
-        parameters?:({ [ key: string ]: ValueType; } & NotJsonValue) | JsonValue;
+        parameters?: ParametersType;
     }
     export interface BuildPrimeTarget
     {
         template: ValueType;
         output: PathValue;
-        parameters?:({ [ key: string ]: ValueType; } & NotJsonValue) | JsonValue;
+        parameters?: ParametersType;
     }
     export interface SinglePrimeMode extends BuildModeBase, BuildPrimeTarget
     {
@@ -57,13 +58,13 @@ export namespace Type
     export interface BuildMetaTarget
     {
         meta: BuildTarget;
-        parameters:({ [ key: string ]: ValueType; } & NotJsonValue) | JsonValue;
+        parameters: ParametersType;
     }
     export type BuildTarget = BuildPrimeTarget | BuildProcessTarget | BuildReferenceTarget | BuildMetaTarget;
     export type SingleMode = SinglePrimeMode | BuildProcessTarget | BuildReferenceTarget | BuildMetaTarget;
     export interface PartialSingleMode
     {
-        parameters:({ [ key: string ]: ValueType; } & NotJsonValue) | JsonValue;
+        parameters: ParametersType;
     }
     export interface MultiMode extends BuildModeBase
     {
@@ -90,6 +91,8 @@ export namespace Type
         additionalProperties: false }));
     export const isValueType: EvilType.Validator.IsType<ValueType> = EvilType.lazy(() => EvilType.Validator.isOr(
         EvilType.Validator.isString, isPathValue, isJsonValue, isCallValue, isResourceValue));
+    export const isParametersType: EvilType.Validator.IsType<ParametersType> = EvilType.lazy(() => EvilType.Validator.isOr(
+        EvilType.Validator.isAnd(EvilType.Validator.isDictionaryObject(isValueType), isNotJsonValue), isJsonValue));
     export const isBuildModeBase = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildModeBaseValidatorObject, {
         additionalProperties: false }));
     export const isBuildPrimeTarget = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildPrimeTargetValidatorObject, {
@@ -127,11 +130,9 @@ export namespace Type
     export const resourceValueValidatorObject: EvilType.Validator.ObjectValidator<ResourceValue> = ({ resource: EvilType.Validator.isString
         , base: EvilType.Validator.isOptional(EvilType.Validator.isString), });
     export const buildModeBaseValidatorObject: EvilType.Validator.ObjectValidator<BuildModeBase> = ({ base: EvilType.Validator.isOptional(
-        EvilType.Validator.isString), parameters: EvilType.Validator.isOptional(EvilType.Validator.isOr(EvilType.Validator.isAnd(
-        EvilType.Validator.isDictionaryObject(isValueType), isNotJsonValue), isJsonValue)), });
+        EvilType.Validator.isString), parameters: EvilType.Validator.isOptional(isParametersType), });
     export const buildPrimeTargetValidatorObject: EvilType.Validator.ObjectValidator<BuildPrimeTarget> = ({ template: isValueType, output:
-        isPathValue, parameters: EvilType.Validator.isOptional(EvilType.Validator.isOr(EvilType.Validator.isAnd(
-        EvilType.Validator.isDictionaryObject(isValueType), isNotJsonValue), isJsonValue)), });
+        isPathValue, parameters: EvilType.Validator.isOptional(isParametersType), });
     export const singlePrimeModeValidatorObject: EvilType.Validator.ObjectValidator<SinglePrimeMode> =
         EvilType.Validator.mergeObjectValidator(buildModeBaseValidatorObject, buildPrimeTargetValidatorObject, { });
     export const buildProcessTargetValidatorObject: EvilType.Validator.ObjectValidator<BuildProcessTarget> = ({ processes:
@@ -139,10 +140,8 @@ export namespace Type
     export const buildReferenceTargetValidatorObject: EvilType.Validator.ObjectValidator<BuildReferenceTarget> = ({ references:
         EvilType.Validator.isString, });
     export const buildMetaTargetValidatorObject: EvilType.Validator.ObjectValidator<BuildMetaTarget> = ({ meta: isBuildTarget, parameters:
-        EvilType.Validator.isOr(EvilType.Validator.isAnd(EvilType.Validator.isDictionaryObject(isValueType), isNotJsonValue), isJsonValue),
-        });
-    export const partialSingleModeValidatorObject: EvilType.Validator.ObjectValidator<PartialSingleMode> = ({ parameters:
-        EvilType.Validator.isOr(EvilType.Validator.isAnd(EvilType.Validator.isDictionaryObject(isValueType), isNotJsonValue), isJsonValue),
+        isParametersType, });
+    export const partialSingleModeValidatorObject: EvilType.Validator.ObjectValidator<PartialSingleMode> = ({ parameters: isParametersType,
         });
     export const multiModeValidatorObject: EvilType.Validator.ObjectValidator<MultiMode> = EvilType.Validator.mergeObjectValidator(
         buildModeBaseValidatorObject, { steps: EvilType.Validator.isArray(isBuildTarget), });

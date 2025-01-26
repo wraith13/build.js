@@ -152,6 +152,31 @@
                         ]
                     }
                 },
+                "ParametersType": {
+                    "type": "type",
+                    "define": {
+                        "type": "or",
+                        "types": [
+                            {
+                                "type": "and",
+                                "types": [
+                                    {
+                                        "type": "dictionary",
+                                        "valueType": {
+                                            "$ref": "ValueType"
+                                        }
+                                    },
+                                    {
+                                        "$ref": "NotJsonValue"
+                                    }
+                                ]
+                            },
+                            {
+                                "$ref": "JsonValue"
+                            }
+                        ]
+                    }
+                },
                 "BuildModeBase": {
                     "type": "interface",
                     "members": {
@@ -159,26 +184,7 @@
                             "type": "string"
                         },
                         "parameters?": {
-                            "type": "or",
-                            "types": [
-                                {
-                                    "type": "and",
-                                    "types": [
-                                        {
-                                            "type": "dictionary",
-                                            "valueType": {
-                                                "$ref": "ValueType"
-                                            }
-                                        },
-                                        {
-                                            "$ref": "NotJsonValue"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "$ref": "JsonValue"
-                                }
-                            ]
+                            "$ref": "ParametersType"
                         }
                     }
                 },
@@ -192,26 +198,7 @@
                             "$ref": "PathValue"
                         },
                         "parameters?": {
-                            "type": "or",
-                            "types": [
-                                {
-                                    "type": "and",
-                                    "types": [
-                                        {
-                                            "type": "dictionary",
-                                            "valueType": {
-                                                "$ref": "ValueType"
-                                            }
-                                        },
-                                        {
-                                            "$ref": "NotJsonValue"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "$ref": "JsonValue"
-                                }
-                            ]
+                            "$ref": "ParametersType"
                         }
                     }
                 },
@@ -261,26 +248,7 @@
                             "$ref": "BuildTarget"
                         },
                         "parameters": {
-                            "type": "or",
-                            "types": [
-                                {
-                                    "type": "and",
-                                    "types": [
-                                        {
-                                            "type": "dictionary",
-                                            "valueType": {
-                                                "$ref": "ValueType"
-                                            }
-                                        },
-                                        {
-                                            "$ref": "NotJsonValue"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "$ref": "JsonValue"
-                                }
-                            ]
+                            "$ref": "ParametersType"
                         }
                     }
                 },
@@ -328,26 +296,7 @@
                     "type": "interface",
                     "members": {
                         "parameters": {
-                            "type": "or",
-                            "types": [
-                                {
-                                    "type": "and",
-                                    "types": [
-                                        {
-                                            "type": "dictionary",
-                                            "valueType": {
-                                                "$ref": "ValueType"
-                                            }
-                                        },
-                                        {
-                                            "$ref": "NotJsonValue"
-                                        }
-                                    ]
-                                },
-                                {
-                                    "$ref": "JsonValue"
-                                }
-                            ]
+                            "$ref": "ParametersType"
                         }
                     },
                     "additionalProperties": false
