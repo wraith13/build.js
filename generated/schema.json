@@ -357,10 +357,17 @@
                 "parameters": {
                     "oneOf": [
                         {
-                            "type": "object",
-                            "additionalProperties": {
-                                "$ref": "#/definitions/Type.ValueType"
-                            }
+                            "allOf": [
+                                {
+                                    "type": "object",
+                                    "additionalProperties": {
+                                        "$ref": "#/definitions/Type.ValueType"
+                                    }
+                                },
+                                {
+                                    "$ref": "#/definitions/Type.NotJsonValue"
+                                }
+                            ]
                         },
                         {
                             "$ref": "#/definitions/Type.JsonValue"

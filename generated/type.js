@@ -63,7 +63,8 @@ var Type;
     Type.buildReferenceTargetValidatorObject = ({ references: evil_type_1.EvilType.Validator.isString, });
     Type.buildMetaTargetValidatorObject = ({ meta: Type.isBuildTarget, parameters: evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isAnd(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isNotJsonValue), Type.isJsonValue),
     });
-    Type.partialSingleModeValidatorObject = ({ parameters: evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isJsonValue), });
+    Type.partialSingleModeValidatorObject = ({ parameters: evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isAnd(evil_type_1.EvilType.Validator.isDictionaryObject(Type.isValueType), Type.isNotJsonValue), Type.isJsonValue),
+    });
     Type.multiModeValidatorObject = evil_type_1.EvilType.Validator.mergeObjectValidator(Type.buildModeBaseValidatorObject, { steps: evil_type_1.EvilType.Validator.isArray(Type.isBuildTarget), });
     Type.rootValidatorObject = ({ $schema: evil_type_1.EvilType.Validator.isJust("https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#"), modes: evil_type_1.EvilType.Validator.isDictionaryObject(Type.isMode), });
 })(Type || (exports.Type = Type = {}));

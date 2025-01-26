@@ -63,7 +63,7 @@ export namespace Type
     export type SingleMode = SinglePrimeMode | BuildProcessTarget | BuildReferenceTarget | BuildMetaTarget;
     export interface PartialSingleMode
     {
-        parameters: { [ key: string ]: ValueType; } | JsonValue;
+        parameters:({ [ key: string ]: ValueType; } & NotJsonValue) | JsonValue;
     }
     export interface MultiMode extends BuildModeBase
     {
@@ -142,7 +142,8 @@ export namespace Type
         EvilType.Validator.isOr(EvilType.Validator.isAnd(EvilType.Validator.isDictionaryObject(isValueType), isNotJsonValue), isJsonValue),
         });
     export const partialSingleModeValidatorObject: EvilType.Validator.ObjectValidator<PartialSingleMode> = ({ parameters:
-        EvilType.Validator.isOr(EvilType.Validator.isDictionaryObject(isValueType), isJsonValue), });
+        EvilType.Validator.isOr(EvilType.Validator.isAnd(EvilType.Validator.isDictionaryObject(isValueType), isNotJsonValue), isJsonValue),
+        });
     export const multiModeValidatorObject: EvilType.Validator.ObjectValidator<MultiMode> = EvilType.Validator.mergeObjectValidator(
         buildModeBaseValidatorObject, { steps: EvilType.Validator.isArray(isBuildTarget), });
     export const rootValidatorObject: EvilType.Validator.ObjectValidator<Root> = ({ $schema: EvilType.Validator.isJust(

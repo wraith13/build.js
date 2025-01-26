@@ -331,10 +331,18 @@
                             "type": "or",
                             "types": [
                                 {
-                                    "type": "dictionary",
-                                    "valueType": {
-                                        "$ref": "ValueType"
-                                    }
+                                    "type": "and",
+                                    "types": [
+                                        {
+                                            "type": "dictionary",
+                                            "valueType": {
+                                                "$ref": "ValueType"
+                                            }
+                                        },
+                                        {
+                                            "$ref": "NotJsonValue"
+                                        }
+                                    ]
                                 },
                                 {
                                     "$ref": "JsonValue"
