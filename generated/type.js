@@ -29,12 +29,8 @@ var Type;
     Type.isSinglePrimeMode = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.singlePrimeModeValidatorObject, {
         additionalProperties: false
     }); });
-    Type.isBuildProcessTarget = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildProcessTargetValidatorObject, {
-        additionalProperties: false
-    }); });
-    Type.isBuildReferenceTarget = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildReferenceTargetValidatorObject, {
-        additionalProperties: false
-    }); });
+    Type.isBuildProcessTarget = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildProcessTargetValidatorObject); });
+    Type.isBuildReferenceTarget = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildReferenceTargetValidatorObject); });
     Type.isBuildMetaTarget = evil_type_1.EvilType.lazy(function () { return evil_type_1.EvilType.Validator.isSpecificObject(Type.buildMetaTargetValidatorObject, {
         additionalProperties: false
     }); });

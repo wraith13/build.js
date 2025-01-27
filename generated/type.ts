@@ -99,10 +99,8 @@ export namespace Type
         additionalProperties: false }));
     export const isSinglePrimeMode = EvilType.lazy(() => EvilType.Validator.isSpecificObject(singlePrimeModeValidatorObject, {
         additionalProperties: false }));
-    export const isBuildProcessTarget = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildProcessTargetValidatorObject, {
-        additionalProperties: false }));
-    export const isBuildReferenceTarget = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildReferenceTargetValidatorObject, {
-        additionalProperties: false }));
+    export const isBuildProcessTarget = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildProcessTargetValidatorObject));
+    export const isBuildReferenceTarget = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildReferenceTargetValidatorObject));
     export const isBuildMetaTarget = EvilType.lazy(() => EvilType.Validator.isSpecificObject(buildMetaTargetValidatorObject, {
         additionalProperties: false }));
     export const isBuildTarget: EvilType.Validator.IsType<BuildTarget> = EvilType.lazy(() => EvilType.Validator.isOr(isBuildPrimeTarget,

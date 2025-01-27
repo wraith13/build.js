@@ -231,7 +231,8 @@
                                 }
                             ]
                         }
-                    }
+                    },
+                    "additionalProperties": true
                 },
                 "BuildReferenceTarget": {
                     "type": "interface",
@@ -239,7 +240,8 @@
                         "references": {
                             "type": "string"
                         }
-                    }
+                    },
+                    "additionalProperties": true
                 },
                 "BuildMetaTarget": {
                     "type": "interface",

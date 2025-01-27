@@ -313,6 +313,9 @@ try
         }
         else
         {
+            const listner = EvilType.Error.makeListener(mode);
+            EvilType.Validator.isOr(Type.isSingleMode, Type.isMultiMode)(json, listner);
+            console.error(listner.errors);
             console.error(`🚫 unknown mode type: ${JSON.stringify(mode)} in ${JSON.stringify(json)}`);
             throw new Error();
         }

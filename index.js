@@ -220,6 +220,15 @@ try {
             buildTrget_1(json, parameters);
         }
         else {
+            var listner_1 = type_1.EvilType.Error.makeListener(mode);
+            type_1.Type.isBuildProcessTarget(json, listner_1);
+            console.error(listner_1.errors);
+            var singleListner = type_1.EvilType.Error.makeListener(mode);
+            type_1.Type.isSingleMode(json, singleListner);
+            console.error(singleListner.errors);
+            var multiListner = type_1.EvilType.Error.makeListener(mode);
+            type_1.Type.isMultiMode(json, multiListner);
+            console.error(multiListner.errors);
             console.error("\uD83D\uDEAB unknown mode type: ".concat(JSON.stringify(mode), " in ").concat(JSON.stringify(json)));
             throw new Error();
         }

@@ -241,7 +241,7 @@
             "required": [
                 "processes"
             ],
-            "additionalProperties": false
+            "additionalProperties": true
         },
         "Type.BuildReferenceTarget": {
             "type": "object",
@@ -253,7 +253,7 @@
             "required": [
                 "references"
             ],
-            "additionalProperties": false
+            "additionalProperties": true
         },
         "Type.BuildMetaTarget": {
             "type": "object",
