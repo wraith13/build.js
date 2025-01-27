@@ -361,7 +361,7 @@
             "additionalProperties": false
         },
         "schema": {
-            "outputFile": "./generated/schema.json",
+            "outputFile": "./generated/json-schema.json",
             "$id": "https://raw.githubusercontent.com/wraith13/build.js/master/generated/json-schema.json#",
             "$ref": "Type.Root"
         }
