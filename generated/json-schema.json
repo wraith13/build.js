@@ -83,7 +83,7 @@
             "required": [
                 "json"
             ],
-            "additionalProperties": false
+            "additionalProperties": true
         },
         "Type.NotJsonValue": {
             "type": "object",
