@@ -250,7 +250,10 @@
                             "$ref": "BuildTarget"
                         },
                         "parameters": {
-                            "$ref": "ParametersType"
+                            "type": "array",
+                            "items": {
+                                "$ref": "ParametersType"
+                            }
                         }
                     }
                 },

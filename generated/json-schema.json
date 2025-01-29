@@ -262,7 +262,10 @@
                     "$ref": "#/definitions/Type.BuildTarget"
                 },
                 "parameters": {
-                    "$ref": "#/definitions/Type.ParametersType"
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Type.ParametersType"
+                    }
                 }
             },
             "required": [
