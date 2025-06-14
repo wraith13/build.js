@@ -21,7 +21,7 @@ try
     const fs = require("fs");
     const makePath = (...path : (undefined | string)[]) => path.map(i => undefined !== i ? i: "").join("").replace(/\/\.\//gm, "/");
     const fget = (path: string) => fs.readFileSync(path, { encoding: "utf-8" });
-    const evalJsonValue = (value: Type.JsonValue) =>
+    const evalJsonValue = (value: Type.JsonValue, strict?: "strict") =>
     {
         let current = JSON.parse(fget(value.json));
         if (undefined !== value.value)
@@ -35,7 +35,7 @@ try
                 current = current[value.value];
             }
         }
-        if ("string" === typeof current)
+        if ("string" === typeof current || "strict" === strict)
         {
             return current;
         }
@@ -247,7 +247,7 @@ try
         if (Type.isBuildMetaTarget(target))
         {
             const parameters = Type.isJsonValue(target.parameters) ?
-                evalJsonValue(target.parameters):
+                evalJsonValue(target.parameters, "strict"):
                 target.parameters;
             //if (isValidArray(parameters, isValidPrimeBuildParameters))
             if (EvilType.Validator.isArray(EvilType.Validator.isDictionaryObject(Type.isValueType))(parameters))

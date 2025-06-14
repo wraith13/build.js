@@ -262,10 +262,17 @@
                     "$ref": "#/definitions/Type.BuildTarget"
                 },
                 "parameters": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/Type.ParametersType"
-                    }
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Type.ParametersType"
+                            }
+                        },
+                        {
+                            "$ref": "#/definitions/Type.JsonValue"
+                        }
+                    ]
                 }
             },
             "required": [

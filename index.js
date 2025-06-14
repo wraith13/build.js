@@ -25,7 +25,7 @@ try {
         return path.map(function (i) { return undefined !== i ? i : ""; }).join("").replace(/\/\.\//gm, "/");
     };
     var fget_1 = function (path) { return fs_1.readFileSync(path, { encoding: "utf-8" }); };
-    var evalJsonValue_1 = function (value) {
+    var evalJsonValue_1 = function (value, strict) {
         var current = JSON.parse(fget_1(value.json));
         if (undefined !== value.value) {
             if (Array.isArray(value.value)) {
@@ -35,7 +35,7 @@ try {
                 current = current[value.value];
             }
         }
-        if ("string" === typeof current) {
+        if ("string" === typeof current || "strict" === strict) {
             return current;
         }
         else {
@@ -175,7 +175,7 @@ try {
         }
         else if (type_1.Type.isBuildMetaTarget(target)) {
             var parameters_1 = type_1.Type.isJsonValue(target.parameters) ?
-                evalJsonValue_1(target.parameters) :
+                evalJsonValue_1(target.parameters, "strict") :
                 target.parameters;
             //if (isValidArray(parameters, isValidPrimeBuildParameters))
             if (type_1.EvilType.Validator.isArray(type_1.EvilType.Validator.isDictionaryObject(type_1.Type.isValueType))(parameters_1)) {

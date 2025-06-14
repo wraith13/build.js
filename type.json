@@ -249,11 +249,20 @@
                         "meta": {
                             "$ref": "BuildTarget"
                         },
-                        "parameters": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "ParametersType"
-                            }
+                        "parameters":
+                        {
+                            "type": "or",
+                            "types": [
+                                {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "ParametersType"
+                                    }
+                                },
+                                {
+                                    "$ref": "JsonValue"
+                                }
+                            ]
                         }
                     }
                 },
