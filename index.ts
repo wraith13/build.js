@@ -106,6 +106,8 @@ try
                 return `${startAt}`;
             case "timestamp_tick":
                 return `${startAt.getTime()}`;
+            case "timestamp_yyyymmddhhmmss":
+                return `${startAt.getFullYear()}${(startAt.getMonth() +1).toString().padStart(2, "0")}${startAt.getDate().toString().padStart(2, "0")}${startAt.getHours().toString().padStart(2, "0")}${startAt.getMinutes().toString().padStart(2, "0")}${startAt.getSeconds().toString().padStart(2, "0")}`;
             default:
                 console.error(`🚫 unknown call: ${JSON.stringify(value)}`);
                 throw new Error();

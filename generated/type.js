@@ -32,7 +32,7 @@ var Type;
     Type.jsonValueValidatorObject = ({ json: evil_type_1.EvilType.Validator.isString, value: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isOr(evil_type_1.EvilType.Validator.isString, evil_type_1.EvilType.Validator.isArray(evil_type_1.EvilType.Validator.isString))), });
     Type.notJsonValueValidatorObject = ({ json: { "$type": "never-type-guard" }, });
     Type.callValueValidatorObject = ({ call: evil_type_1.EvilType.Validator.isEnum(["command", "command_options",
-            "timestamp", "timestamp_tick"]), });
+            "timestamp", "timestamp_tick", "timestamp_yyyymmddhhmmss"]), });
     Type.resourceValueValidatorObject = ({ resource: evil_type_1.EvilType.Validator.isString, base: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isString), });
     Type.buildModeBaseValidatorObject = ({ base: evil_type_1.EvilType.Validator.isOptional(evil_type_1.EvilType.Validator.isString), parameters: evil_type_1.EvilType.Validator.isOptional(Type.isParametersType), });
     Type.buildPrimeTargetValidatorObject = ({ template: Type.isValueType, output: Type.isPathValue,

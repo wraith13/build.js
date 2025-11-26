@@ -85,6 +85,8 @@ try {
                     return "".concat(startAt);
                 case "timestamp_tick":
                     return "".concat(startAt.getTime());
+                case "timestamp_yyyymmddhhmmss":
+                    return "".concat(startAt.getFullYear()).concat((startAt.getMonth() + 1).toString().padStart(2, "0")).concat(startAt.getDate().toString().padStart(2, "0")).concat(startAt.getHours().toString().padStart(2, "0")).concat(startAt.getMinutes().toString().padStart(2, "0")).concat(startAt.getSeconds().toString().padStart(2, "0"));
                 default:
                     console.error("\uD83D\uDEAB unknown call: ".concat(JSON.stringify(value)));
                     throw new Error();

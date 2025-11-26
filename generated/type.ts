@@ -24,7 +24,7 @@ export namespace Type
     }
     export interface CallValue
     {
-        call: "command" | "command_options" | "timestamp" | "timestamp_tick";
+        call: "command" | "command_options" | "timestamp" | "timestamp_tick" | "timestamp_yyyymmddhhmmss";
     }
     export interface ResourceValue
     {
@@ -111,7 +111,7 @@ export namespace Type
         EvilType.Validator.isOptional(EvilType.Validator.isOr(EvilType.Validator.isString, EvilType.Validator.isArray(EvilType.Validator.isString))), });
     export const notJsonValueValidatorObject: EvilType.Validator.ObjectValidator<NotJsonValue> = ({ json: { "$type": "never-type-guard" } as const, });
     export const callValueValidatorObject: EvilType.Validator.ObjectValidator<CallValue> = ({ call: EvilType.Validator.isEnum([ "command", "command_options",
-        "timestamp", "timestamp_tick" ] as const), });
+        "timestamp", "timestamp_tick", "timestamp_yyyymmddhhmmss" ] as const), });
     export const resourceValueValidatorObject: EvilType.Validator.ObjectValidator<ResourceValue> = ({ resource: EvilType.Validator.isString, base:
         EvilType.Validator.isOptional(EvilType.Validator.isString), });
     export const buildModeBaseValidatorObject: EvilType.Validator.ObjectValidator<BuildModeBase> = ({ base: EvilType.Validator.isOptional(
